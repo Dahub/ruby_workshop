@@ -2,9 +2,9 @@ class Playground
 
     attr_accessor :table, :ia, :player
 
-    def initialize(ia, first_move)      
+    def initialize(ia)      
         
-        check_input_datas(ia, first_move)
+        check_ia(ia)
     
         @ia = ia
         if(ia == 'x')
@@ -21,7 +21,6 @@ class Playground
                     ['a','3','_'],
                     ['b','3','_'],
                     ['c','3','_'] ]                        
-        add_move(first_move)
     end  
     
     # return could be :
@@ -68,6 +67,16 @@ class Playground
         end
         return false
     end
+    
+    def get_empty_space()
+        empties = []
+        table.each do |t|
+            if(t[2] == '_')
+                empties << t
+            end
+        end
+        return empties
+    end   
     
     private
     
@@ -129,17 +138,7 @@ class Playground
                 return comparer
             end
             return nil
-        end
-        
-        def get_empty_space()
-            empties = []
-            table.each do |t|
-                if(t[2] == '_')
-                    empties << t
-                end
-            end
-            return empties
-        end   
+        end  
         
         def check_position_exists?(move)
             return !(@table.index move).nil?
@@ -159,11 +158,6 @@ class Playground
                 end                
             end
             return false
-        end
-        
-        def check_input_datas(ia, move)
-            check_ia(ia)
-            check_move(move)
         end
         
         def check_ia(ia)

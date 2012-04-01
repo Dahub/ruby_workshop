@@ -13,5 +13,40 @@ describe Party do
         end  
         
     end
+    
+    describe "start party" do
+    
+        it "Should return playground" do
+            @party.player_start(['a','1','o'])
+            @party.playground.should be_an_instance_of(Playground)
+        end    
+        
+        it "Should find one move on playground" do
+            @party.player_start(['a','1','o'])
+            index = 0
+            @party.playground.table.each do |t|
+                if(t[2] != '_')
+                    index += 1
+                end
+            end
+            index.should equal(1)
+        end
+        
+        it "Should return playground" do
+            @party.ia_start()
+            @party.playground.should be_an_instance_of(Playground)
+        end    
+        
+        it "Should find one move on playground" do
+            @party.ia_start()
+            index = 0
+            @party.playground.table.each do |t|
+                if(t[2] != '_')
+                    index += 1
+                end
+            end
+            index.should equal(1)
+        end
+    end
 
 end

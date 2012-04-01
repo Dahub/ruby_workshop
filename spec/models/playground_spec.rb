@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Playground do
 
     before(:each) do
-        @new_playground = Playground.new('x',['a','1','x'])
+        @new_playground = Playground.new('x')
     end
     
     describe "initialize" do
@@ -20,35 +20,8 @@ describe Playground do
         
         it "player should be different from ia" do
             (@new_playground.player == @new_playground.ia).should be_false
-        end
-        
-        it "should raise ia error" do
-            lambda{Playground.new('z',['a','1','x'])}.should raise_error
-        end       
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x',['2','1','x'])}.should raise_error
-        end 
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x','o')}.should raise_error
-        end 
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x',['b','0','x'])}.should raise_error
-        end 
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x',['d','1','x'])}.should raise_error
-        end 
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x',['b','5','x'])}.should raise_error
-        end 
-        
-        it "should raise bad move error" do
-            lambda{Playground.new('x',['a','2','8'])}.should raise_error
-        end 
+        end        
+       
     end
     
     describe "add_move" do
@@ -81,18 +54,17 @@ describe Playground do
         end
         
         it "should be false" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','1','o']).should be_false
-        end
-        
-        it "should be false" do
-            @new_playground.add_move(['a','1','o']).should be_false
-        end
+        end        
         
         it "should be true" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','2','o']).should be_true
         end
         
         it "should be equal to o" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','2','o'])
             @new_playground.table[3][2].should eq('o')
         end
@@ -133,6 +105,7 @@ describe Playground do
         end
         
         it "should_be_true" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.remove_move(['a','1','x']).should be_true
         end
         
@@ -148,6 +121,7 @@ describe Playground do
         end
         
         it "should eq player" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['c','3','o'])
             @new_playground.add_move(['a','3','x'])
             @new_playground.add_move(['c','2','o'])
@@ -157,6 +131,7 @@ describe Playground do
         end
         
         it "should eq player" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['c','2','o'])
             @new_playground.add_move(['a','3','x'])
             @new_playground.add_move(['b','2','o'])
@@ -166,6 +141,7 @@ describe Playground do
         end
         
          it "should eq player" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','3','o'])
             @new_playground.add_move(['a','2','x'])
             @new_playground.add_move(['b','2','o'])
@@ -175,6 +151,7 @@ describe Playground do
         end
         
         it "should eq draw" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','3','o'])
             @new_playground.add_move(['a','2','x'])
             @new_playground.add_move(['b','2','o'])
@@ -187,6 +164,7 @@ describe Playground do
         end
         
          it "should eq ia" do
+            @new_playground.add_move(['a','1','x'])
             @new_playground.add_move(['a','3','o'])
             @new_playground.add_move(['c','3','x'])
             @new_playground.add_move(['c','1','o'])

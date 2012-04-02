@@ -1,0 +1,8 @@
+<%= form_tag('tictactoes/starts') do %>
+    Player start ? ('x' or 'o') : <br />
+    x : <%=radio_button_tag 'player', 'x', true %><br />
+    o : <%=radio_button_tag 'player', 'o' %><br /><br />
+    ia start : <%=check_box_tag 'accept' %>
+    <%= submit_tag(value = "Start") %>
+<% end %>
+  

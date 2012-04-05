@@ -21,7 +21,8 @@ class Party
     
     def player_play(move)        
         @playground.add_move(move)
-        return update_playground_by_ia()
+        update_playground_by_ia()
+        return get_playground()
     end   
     
     def party_state()
@@ -29,6 +30,14 @@ class Party
             return @playground.get_state()
         end
         return nil
+    end
+    
+    def get_playground()
+        to_return = "";
+        @playground.table.each do |p|
+            to_return += p[0] + p[1] + p[2] + "#"
+        end
+        return to_return
     end
     
     private

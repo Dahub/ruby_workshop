@@ -1,6 +1,7 @@
 RubyWorkshop::Application.routes.draw do
   get "tictactoes/index"
   get "tictactoes/create"
+  post "tictactoes/ask_move"
   post "tictactoes/starts"
 
 

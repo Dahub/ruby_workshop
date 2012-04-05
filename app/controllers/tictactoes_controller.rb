@@ -8,11 +8,16 @@ class TictactoesController < ApplicationController
     if(params['accept'] == '1')
         session[:party].ia_start()
     end    
-    @test = session[:party].playground.table.inspect
+    @playground = session[:party].get_playground()
   end
   
   def player_start
      
   end  
+  
+  def ask_move  
+    move = params['move']
+    render :text => session[:party].player_play(move.split(//));
+  end
   
 end

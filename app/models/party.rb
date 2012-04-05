@@ -13,6 +13,11 @@ class Party
         return @playground
     end
     
+    def party_start()
+        @playground = Playground.new(@ia)
+        return @playground
+    end
+    
     def player_start(move)
         @playground = Playground.new(@ia)
         player_play(move)
@@ -80,19 +85,19 @@ class Party
   
             to_return = avoid_immediate_loss()
             
-            if(to_return == nil || to_return[0] == nil)        
+            if(to_return == nil || to_return[0] == nil)   
                 to_return = search_certain_ia_victory()              
             end          
-            if(to_return == nil || to_return[0] == nil)
+            if(to_return == nil || to_return[0] == nil)                
                 to_return = search_non_loosing_move()
             end
-            if(to_return == nil || to_return[0] == nil)
+            if(to_return == nil || to_return[0] == nil)                
                 to_return = search_best_win_chance_move()
             end
-            if(to_return == nil || to_return[0] == nil)
+            if(to_return == nil || to_return[0] == nil)                            
                 to_return == search_best_draw_chance_move()
             end
-            if(to_return == nil || to_return[0] == nil)
+            if(to_return == nil || to_return[0] == nil)                
                 to_return = (@possibles_moves.sample)[0]
             end    
                        
@@ -130,40 +135,32 @@ class Party
             return to_return
         end
         
-        def search_best_win_chance_move()
+        def search_best_win_chance_move()        
             to_return = nil
-            test_var = @possibles_moves[0][3]
+            test_var = @possibles_moves[0][6]
             ok_moves = []
-            @possibles_moves.each do |m|  
-                if(m[3] > test_var)
-                    test_var = m[3]
-                    ok_moves = [m[0]]
-                elsif(m[3] == test_var)
-                    ok_moves << m[0]
+            @possibles_moves.each do |m|              
+                if(m[6] > test_var)
+                    test_var = m[6]
+                    ok_moves = [m]
+                elsif(m[6] == test_var)
+                    ok_moves << m
                 end
             end
             if(ok_moves.length > 0)
-                to_return = ok_moves.sample
-            end
-            return to_return
-        end
-        
-        def search_best_draw_chance_move()
-            to_return = nil
-            test_var = @possibles_moves[0][2]
-            ok_moves = []
-            @possibles_moves.each do |m|  
-                if(m[2] > test_var)
-                    test_var = m[2]
-                    ok_moves = [m[0]]
-                elsif(m[2] == test_var)
-                    ok_moves << m[0]
-                end
-            end
-            if(ok_moves.length > 0)
-                to_return = ok_moves.sample
-            end
-            return to_return
+                draw_test_var = ok_moves[0][1]
+                ok_draw_moves = []
+                ok_moves.each do |draw_m|               
+                    if(draw_m[1] > draw_test_var)
+                        draw_test_var = draw_m[1]
+                        ok_draw_moves = [draw_m]
+                    elsif(draw_m[1] == draw_test_var)
+                        ok_draw_moves << draw_m
+                    end
+                end    
+                to_return = ok_draw_moves.sample[0]
+            end            
+            return to_return        
         end
         
         def simulate_new_move(move)  

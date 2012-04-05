@@ -1,8 +1,10 @@
 var playzone_width = 390;
 var playground;
+var playerSymbol;
 
-function initCanvas(pg){
+function initCanvas(pg, ps){
     playground= pg;
+    playerSymbol = ps;
 	clearCanvas(); // clear existing canvas			
 	canvas.addEventListener('mousemove',highlightCase,false);	
 	canvas.addEventListener('mouseout',clearCanvas,false);
@@ -55,7 +57,7 @@ function clicAppends(e){
     var canvas= $('#canvas');    
 	var caseX = transformToCaseX(canvas,e);
     var caseY = transformToCaseY(canvas,e);
-    var moveString = caseY + caseX + "o";
+    var moveString = caseY + caseX + playerSymbol;
 	$.post("/tictactoes/ask_move",{ move: moveString}, function(data){
 	    playground = data;
         clearCanvas();

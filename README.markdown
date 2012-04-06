@@ -1,6 +1,6 @@
 # Ruby workshop
-*un endroit où j'apprend le Ruby*
-Ici, se trouvent mes projets pour me familiariser avec Ruby, ainsi qu'avec les balises HTML5 et le CSS 3.  
+*un endroit où j'apprend le Ruby*  
+Ici, se trouvent mes projets pour me familiariser avec Ruby, ainsi qu'avec les balises HTML5 et le CSS3.  
 Pour l'instant, rien de bien exploitable :)
 
 ## tic tac toe

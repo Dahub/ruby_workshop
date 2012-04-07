@@ -1,0 +1,50 @@
+// Place all the styles related to the homes controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.link_elem{    
+    width:600px;
+    padding:10px;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 10px;   
+}
+
+.tictactoes_float_left{
+    float:left;
+    padding-right:20px;
+}
+
+.tictactoes_elem{
+    background-image: -webkit-linear-gradient(right top, #c57672 0%, #ffffff 100%);
+    background-image:    -moz-linear-gradient(right top, #c57672 0%, #ffffff 100%);
+    background-image:     -ms-linear-gradient(right top, #c57672 0%, #ffffff 100%);
+    background-image:      -o-linear-gradient(right top, #c57672 0%, #ffffff 100%);
+    background-image:         linear-gradient(right top, #c57672 0%, #ffffff 100%);
+}
+.elem_list a:hover {
+    text-decoration:none;
+    font-weight:normal;
+}
+.elem_list a {
+    text-decoration:none;
+    font-weight:normal;
+    color:#4b0002;
+}
+.tictactoes_elem_title_1,
+.tictactoes_elem_title_2,
+.tictactoes_elem_title_3{
+    font-size:20px;
+    padding:0px;
+    margin:0px;
+    font-weight:bold;
+}
+
+.tictactoes_elem_title_1{
+    color:#5555aa;   
+}
+.tictactoes_elem_title_2{
+    color:#aa5555;
+}
+.tictactoes_elem_title_3{
+    color:#55aa55;   
+}

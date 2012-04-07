@@ -3,6 +3,8 @@ RubyWorkshop::Application.routes.draw do
   get "tictactoes/create"
   post "tictactoes/ask_move"
   post "tictactoes/starts"
+  
+  get "homes/index"
 
 
   # The priority is based upon order of creation:
@@ -54,7 +56,7 @@ RubyWorkshop::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'tictactoes#index'
+  root :to => 'homes#index'
 
   # See how all your routes lay out with "rake routes"
 

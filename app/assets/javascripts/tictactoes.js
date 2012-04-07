@@ -31,33 +31,43 @@ function highlightCase(e){
 	drawHighligtCase(caseX,caseY);
 }
 
-function transformToCaseX(canvas,e){
-    var posX =e.pageX - canvas.offset().left;
-    if(posX <= playzone_width/3){
-        return '1';
+function transformToCase(e){
+    var coords = relMouseCoords(e);
+    var x;
+    var y;
+    if(coords.posX <= playzone_width/3){
+        x = '1';
     }
-    else if(posX > playzone_width/3 && posX < playzone_width/1.5){
-        return '2';
+    else if(coords.posX > playzone_width/3 && coords.posX < playzone_width/1.5){
+        x= '2';
     }
-    return '3';
+    else{
+        x = '3';
+    }
+    if(coords.posY <= playzone_width/3){
+        y = 'c';
+    }
+    else if (coords.posY > playzone_width/3 && coords.posY < playzone_width/1.5){
+        y = 'b';
+    }
+    else{
+        y = 'a';
+    }
+    
+    return {caseX:x , caseY:y };    
 }
 
-function transformToCaseY(canvas,e){
-    var posY =canvas.offset().left - e.pageY;
-    if(posY <= playzone_width/3){
-        return 'a';
-    }
-    else if (posY > playzone_width/3 && posY < playzone_width/1.5){
-        return 'b';
-    }
-    return 'c';
+function relMouseCoords(event){
+    var x, y;
+    canoffset = $(canvas).offset();
+    x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
+    y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1;
+    return {posX:x,posY:y};
 }
 
 function clicAppends(e){
-    var canvas= $('#canvas');    
-	var caseX = transformToCaseX(canvas,e);
-    var caseY = transformToCaseY(canvas,e);
-    var moveString = caseY + caseX + playerSymbol;
+    var caseCoords = transformToCase(e);    
+    var moveString = caseCoords.caseY + caseCoords.caseX + playerSymbol;
 	$.post("/tictactoes/ask_move",{ move: moveString}, function(data){
 	    playground = data;
         clearCanvas();
@@ -191,7 +201,7 @@ function clearCanvas() {
 	var w = canvas.width;
 	canvas.width = 1;
 	canvas.width = w;
-	context.fillStyle = '#dedebe';		  	
+	context.fillStyle = '#dedede';		  	
 	context.fillRect(0, 0, playzone_width, playzone_width);			
 	drawPlaygroundLines(context);	
 	drawCrossAndRound();

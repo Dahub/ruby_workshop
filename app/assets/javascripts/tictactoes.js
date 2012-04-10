@@ -65,12 +65,16 @@ function relMouseCoords(event){
     return {posX:x,posY:y};
 }
 
-function clicAppends(e){
+function clicAppends(e){    
     var caseCoords = transformToCase(e);    
     var moveString = caseCoords.caseY + caseCoords.caseX + playerSymbol;
+    $("#loadingDiv").removeClass("tictactoe_loading_hidden");
+    $("#loadingDiv").addClass("tictactoe_loading"); 
 	$.post("/tictactoes/ask_move",{ move: moveString}, function(data){
 	    playground = data;
         clearCanvas();
+        $("#loadingDiv").addClass("tictactoe_loading_hidden");
+        $("#loadingDiv").removeClass("tictactoe_loading"); 
     });
 }
 

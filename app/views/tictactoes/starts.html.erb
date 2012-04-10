@@ -1,7 +1,10 @@
 <div class="playzone">
+    <div id="loadingDiv" class="tictactoe_loading_hidden">
+        <%= image_tag ("ajax-loader.gif") %>
+    </div>
+    
     <canvas id="canvas" width="390" height="390" >
 		    Canvas not supported.
     </canvas>
-        <%= javascript_tag "initCanvas(\"" + @playground + "\",\"" + @ia + "\");" %>		
+        <%= javascript_tag "initCanvas(\"" + @playground + "\",\"" + @ia + "\");" %>       
 </div>
-<%=@test %>

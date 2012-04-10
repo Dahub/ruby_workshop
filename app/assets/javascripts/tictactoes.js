@@ -92,7 +92,7 @@ function drawHighligtCase(caseX,caseY){
 	
 	context.beginPath();
 	context.rect(caseX, caseY, playzone_width/3, playzone_width/3);
-	context.fillStyle = "#bebede";
+	context.fillStyle = "rgba(68, 36, 41, 0.5)"; 
     context.fill();
     context.lineWidth = 1;
     context.strokeStyle = "black";
@@ -153,7 +153,7 @@ function drawCross(myCase,canvas,context,x,y){
     var rectLength = playzone_width/4;
     var padding = (playzone_width/3 - rectLength)/2;
     context.beginPath();
-    context.lineWidth="2";
+    context.lineWidth="5";
     context.moveTo(padding + x, padding + y);
 	context.lineTo(padding + x + rectLength, padding + y + rectLength);
 	context.moveTo(padding + x + rectLength, padding + y);
@@ -165,7 +165,7 @@ function drawRound(myCase,canvas,context,x,y){
     var ray = playzone_width/8;
     var padding = (playzone_width/3 - 2*ray)/2;
     context.beginPath();
-    context.lineWidth="2";    
+    context.lineWidth="5";    
     context.arc(ray + x + padding, ray + y + padding, ray, 0, 2 * Math.PI);
     context.stroke();
 }

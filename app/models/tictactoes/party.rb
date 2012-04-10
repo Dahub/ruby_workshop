@@ -25,8 +25,9 @@ class Party
     end
     
     def player_play(move)        
-        @playground.add_move(move)
-        update_playground_by_ia()
+        if(@playground.add_move(move))
+            update_playground_by_ia()
+        end
         return get_playground()
     end   
     

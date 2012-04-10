@@ -21,7 +21,7 @@ describe Party do
             @party.playground.should be_an_instance_of(Playground)
         end    
         
-        it "Should find one move on playground" do
+        it "Should find two move on playground" do
             @party.player_start(['a','1','o'])
             index = 0
             @party.playground.table.each do |t|
@@ -29,7 +29,7 @@ describe Party do
                     index += 1
                 end
             end
-            index.should equal(1)
+            index.should equal(2)
         end
         
         it "Should return playground" do
@@ -42,6 +42,19 @@ describe Party do
             index = 0
             @party.playground.table.each do |t|
                 if(t[2] != '_')
+                    index += 1
+                end
+            end
+            index.should equal(1)
+        end
+        
+        it "Should don't add new move" do
+            @party.ia_start()
+            @party.player_play(['a','1','o'])
+            @party.player_play(['a','1','o'])
+            index = 0
+            @party.playground.table.each do |t|
+                if(t[2] == 'o')
                     index += 1
                 end
             end

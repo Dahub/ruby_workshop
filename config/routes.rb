@@ -3,6 +3,7 @@ RubyWorkshop::Application.routes.draw do
   get "tictactoes/create"
   post "tictactoes/ask_move"
   post "tictactoes/starts"
+  post "tictactoes/ask_party_state"
   
   get "homes/index"
 

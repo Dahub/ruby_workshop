@@ -75,7 +75,25 @@ function clicAppends(e){
         clearCanvas();
         $("#loadingDiv").addClass("tictactoe_loading_hidden");
         $("#loadingDiv").removeClass("tictactoe_loading"); 
+        $.post("/tictactoes/ask_party_state", function(data){
+            if(data != "none"){
+                showEndGame(data);
+            }
+        });
     });
+}
+
+function showEndGame(partyState){
+    $("#partyEnd").removeClass("tictactoe_end_party_hidden");
+    $("#partyEnd").addClass("tictactoe_end_party");     
+    var text = "Draw";
+    if(partyState == "player"){
+        text = "Player win";
+    }
+    else if(partyState == "ia"){
+        text = "IA win";
+    }
+    $("#partyEnd").html(text);
 }
 
 function getCaseX(canvas,e){

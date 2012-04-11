@@ -12,6 +12,8 @@ class TictactoesController < ApplicationController
     end    
     @playground = session[:party].get_playground()
     @ia = session[:player]
+    @ia_start = params['accept']
+    @player = params['player']
   end
   
   def player_start
@@ -20,7 +22,11 @@ class TictactoesController < ApplicationController
   
   def ask_move  
     move = params['move']
-    render :text => session[:party].player_play(move.split(//));
+    render :text => session[:party].player_play(move.split(//))
+  end
+  
+  def ask_party_state
+    render :text => session[:party].party_state()
   end
   
 end

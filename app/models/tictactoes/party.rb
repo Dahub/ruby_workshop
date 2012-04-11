@@ -20,13 +20,15 @@ class Party
     
     def player_start(move)
         @playground = Playground.new(@ia)
-        player_play(move)
+        player_play(move)     
         return @playground
     end
     
-    def player_play(move)        
-        if(@playground.add_move(move))
-            update_playground_by_ia()
+    def player_play(move)    
+        if(party_state() == "none")    
+            if(@playground.add_move(move))                
+                update_playground_by_ia()               
+            end
         end
         return get_playground()
     end   
@@ -49,8 +51,10 @@ class Party
     private
     
         def update_playground_by_ia()
-            next_move = find_next_move()
-            @playground.add_move(next_move)
+            if(party_state() == "none" && @playground.table.select { |m| m[2] != '_' }.length < 9)
+                next_move = find_next_move()
+                @playground.add_move(next_move)
+            end
             return @playground
         end
     

@@ -2,9 +2,18 @@
     <div id="loadingDiv" class="tictactoe_loading_hidden">
         <%= image_tag ("ajax-loader.gif") %>
     </div>
-    
+    <div id="partyEnd" class="tictactoe_end_party_hidden">
+    </div>
     <canvas id="canvas" width="390" height="390" >
 		    Canvas not supported.
     </canvas>
-        <%= javascript_tag "initCanvas(\"" + @playground + "\",\"" + @ia + "\");" %>       
+    <%= javascript_tag "initCanvas(\"" + @playground + "\",\"" + @ia + "\");" %>      
+    <br /><br />
+    <%= form_tag('/tictactoes/starts') do %>
+        <%= hidden_field_tag('player',@player) %>
+        <%= hidden_field_tag('accept',@ia_start) %>        
+        <%= submit_tag(value = "Restart") %>&nbsp;
+        <%= link_to('back to menu','/tictactoes/index') %>
+    <% end %>
+    <br /><br />
 </div>

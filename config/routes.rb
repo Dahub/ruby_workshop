@@ -1,4 +1,5 @@
 RubyWorkshop::Application.routes.draw do
+ 
   get "tictactoes/index"
   get "tictactoes/create"
   post "tictactoes/ask_move"
@@ -6,6 +7,10 @@ RubyWorkshop::Application.routes.draw do
   post "tictactoes/ask_party_state"
   
   get "homes/index"
+  
+  get "projects/index"
+  
+  get "/draughts/index"
 
 
   # The priority is based upon order of creation:

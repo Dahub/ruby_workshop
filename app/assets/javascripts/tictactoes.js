@@ -15,15 +15,6 @@ function getCanvas(){
 	return document.getElementById('canvas');	
 }
 
-function getContext(canvas){				
-	if (canvas && canvas.getContext) {
-		var context = canvas.getContext('2d');
-		if (context) {	
-			return context;
-		}
-	}
-}
-
 function highlightCase(e){
 	var canvas = $('#canvas');
 	var caseX = getCaseX(canvas,e);
@@ -32,7 +23,7 @@ function highlightCase(e){
 }
 
 function transformToCase(e){
-    var coords = relMouseCoords(e);
+    var coords = relMouseCoords($(canvas), e);
     var x;
     var y;
     if(coords.posX <= playzone_width/3){
@@ -55,14 +46,6 @@ function transformToCase(e){
     }
     
     return {caseX:x , caseY:y };    
-}
-
-function relMouseCoords(event){
-    var x, y;
-    canoffset = $(canvas).offset();
-    x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
-    y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top) + 1;
-    return {posX:x,posY:y};
 }
 
 function clicAppends(e){    

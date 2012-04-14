@@ -7,7 +7,11 @@ class Draughts_game
     end
 
     def get_playground()
-        return @draughts_playground.draughts_table
+        to_return = "";
+        @draughts_playground.draughts_table.each do |p|
+            to_return += p[0] + p[1] + "#"
+        end
+        return to_return[0..-2]
     end
     
     def get_possibles_moves(move)

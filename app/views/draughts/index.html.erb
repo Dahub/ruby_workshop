@@ -1,0 +1,10 @@
+<div class="content_draught">
+    <div class="draughts_base">
+    </div>
+    <div class="draughts_playzone">
+        <canvas id="canvas" width="500" height="500" >
+		    Canvas not supported.
+    </canvas>
+        <%= javascript_tag "initDraughtsCanvas(\"" + @table +  "\");" %>
+    </div>
+</div>

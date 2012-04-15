@@ -14,13 +14,14 @@ class Draughts_game
         return to_return[0..-2]
     end
     
-    def get_possibles_moves(move)
+    def get_possibles_moves(case_number)        
+        return @draughts_playground.get_possibles_moves(case_number)
     end
     
     def player_move(move)
     end
     
     def get_party_state()
-    end
+    end   
 
 end

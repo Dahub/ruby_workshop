@@ -16,10 +16,12 @@
 <br />
 <div class="elem_list">
     <%=  link_to("/draughts/index") do %>
-        <div class="link_elem draughts_elem">          
-              Jeu de dames<br />
+        <div class="link_elem draughts_elem">   
+            <div class="draught_float_left">
+                <%= image_tag('/assets/draughts_icone.png') %>
+            </div>       
               Le joueur commence avec les blancs.<br />
-              Le jeu implémente l'algorithme minimax sur une profondeur de 2.5 coups
+              Le jeu implémente l'algorithme minimax sur une profondeur de 2.5 coups.<br />
               Cliquer pour démarrer 
         </div>              
     <% end %>

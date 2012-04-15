@@ -27,3 +27,22 @@
     float:left;
     padding-right:10px;
 }
+
+.draught_loading
+{
+    padding-top:190px;
+    text-align:center;
+	position:absolute;
+    margin-top:20px;
+	margin-right:50%;
+	right:-250px;
+	width:500px;
+	height:310px;
+	background: url('/assets/loading_background.png');
+}
+
+.draught_loading_hidden
+{
+    display:none;
+    background: url('/assets/loading_background.png');
+}

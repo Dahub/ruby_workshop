@@ -7,4 +7,7 @@
     </canvas>
         <%= javascript_tag "initDraughtsCanvas(\"" + @table +  "\");" %>
     </div>
+    <div id="draughtsLoadingDiv" class="draught_loading_hidden">
+        <%= image_tag ("ajax-loader.gif") %>
+    </div>
 </div>

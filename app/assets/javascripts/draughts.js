@@ -6,7 +6,7 @@ var possible_move_cases = new Array();
 function initDraughtsCanvas(pg){
     playground= pg.split('#'); 
     canvas.addEventListener('mousedown', draughtsClicAppends, false);
-    clearDraughtCanvas();   
+    clearDraughtCanvas(); 
 }
 
 function clearDraughtCanvas(){
@@ -77,37 +77,42 @@ function reset_selected_case(){
 
 function draughtsClicAppends(e){
     var caseNumber = getCaseNumber(e);
-    if(possible_move_cases && possible_move_cases.indexOf(caseNumber) > -1){
+    showLoadingDiv();
+    if(possible_move_cases && possible_move_cases.indexOf(caseNumber) > -1){ 
         $.ajax({
             type: 'POST',
-            async: false,
+            async: true,
             url: "/draughts/player_move",
             data: "move=" + selected_case + ',-,' + caseNumber,
             success: function(data) {
                  playground= data.split('#');                  
-                 reset_selected_case();
+                 reset_selected_case();  
+                 clearDraughtCanvas();   
+                 hideLoadingDiv();          
             }
         });
     } 
     else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) != '_'){
         selected_case = caseNumber;    
         var canvas = $('#canvas')[0];
-	    var context = getContext(canvas);
-	    
+	    var context = getContext(canvas);		    
 	    $.ajax({
             type: 'POST',
-            async: false,
+            async: true,
             url: "/draughts/get_possibles_move",
             data: "case_number=" + selected_case,
             success: function(data) {
-                possible_move_cases = data.slice();
+                possible_move_cases = data.slice();     
+                clearDraughtCanvas();   
+                hideLoadingDiv();        
             }
-        });
+        });     
     }
     else{        
         reset_selected_case();
-    }    	
-    clearDraughtCanvas();
+        clearDraughtCanvas();
+        hideLoadingDiv();
+    }       
 }
 
 function getCaseNumber(e){
@@ -138,5 +143,15 @@ function convertCaseNumberToCoords(caseNumber){
     var y = lineNumber * draughts_playzone_width/10 - draughts_playzone_width/10;
     var x = (caseNumber)*draughts_playzone_width/5 - toRemoveToX - draughts_playzone_width/10;
     return {posX:x , posY:y };
+}
+
+function showLoadingDiv(){
+    $("#draughtsLoadingDiv").removeClass("draught_loading_hidden");
+    $("#draughtsLoadingDiv").addClass("draught_loading"); 
+}
+
+function hideLoadingDiv(){
+    $("#draughtsLoadingDiv").removeClass("draught_loading");
+    $("#draughtsLoadingDiv").addClass("draught_loading_hidden"); 
 }
 

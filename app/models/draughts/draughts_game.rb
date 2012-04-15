@@ -19,6 +19,10 @@ class Draughts_game
     end
     
     def player_move(move)
+        if(move.length != 3)
+            raise "move must be a 3 char table"
+        end
+        @draughts_playground.add_move(move)
     end
     
     def get_party_state()

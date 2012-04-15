@@ -40,6 +40,16 @@ class Draughts_playground
         return to_return;
     end 
     
+    def add_move(move)
+        start_case = move[0].to_i
+        end_case = move[2].to_i
+        if(@draughts_table[start_case - 1][0] != '_' && @draughts_table[end_case - 1][0] == '_')
+            player_char = @draughts_table[start_case - 1]
+            @draughts_table[start_case - 1] = '_0'
+            @draughts_table[end_case - 1] = player_char
+        end
+    end
+    
     private
     
         def get_line_number(case_number)

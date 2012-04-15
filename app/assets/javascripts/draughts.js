@@ -70,15 +70,26 @@ function drawColoredPieces(context, pieces,imagePath){
     myImage.src = imagePath;
 }
 
+function reset_selected_case(){
+    selected_case = 0;
+    possible_move_cases = [];
+}
+
 function draughtsClicAppends(e){
     var caseNumber = getCaseNumber(e);
     if(possible_move_cases && possible_move_cases.indexOf(caseNumber) > -1){
-        alert('ok');
-    }    
-    
-    possible_move_cases = [];   
-     
-    if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) != '_'){
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: "/draughts/player_move",
+            data: "move=" + selected_case + ',-,' + caseNumber,
+            success: function(data) {
+                 playground= data.split('#');                  
+                 reset_selected_case();
+            }
+        });
+    } 
+    else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) != '_'){
         selected_case = caseNumber;    
         var canvas = $('#canvas')[0];
 	    var context = getContext(canvas);
@@ -94,7 +105,7 @@ function draughtsClicAppends(e){
         });
     }
     else{        
-        selected_case = 0;
+        reset_selected_case();
     }    	
     clearDraughtCanvas();
 }

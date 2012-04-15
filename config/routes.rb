@@ -12,6 +12,7 @@ RubyWorkshop::Application.routes.draw do
   
   get "/draughts/index"
   post "/draughts/get_possibles_move"
+  post "/draughts/player_move"
 
 
   # The priority is based upon order of creation:

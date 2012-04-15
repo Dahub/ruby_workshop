@@ -45,11 +45,17 @@ describe Draughts_game do
     
     it "should return a valid playground" do
         @my_game.player_move(['31','-','27'])
-        @playground[27].should eq("w0")
+        @my_game.get_playground().split('#')[26].should eq("w0")
+    end
+    
+    it "should raise an error" do
+        lambda{@my_game.player_move(['31','27'])}.should raise_error
     end
     
     it "should return none" do
         @my_game.get_party_state().should eq("none")
     end
+    
+   
     
 end

@@ -2,11 +2,21 @@ var draughts_playzone_width = 500;
 var playground;
 var selected_case = 0;
 var possible_move_cases = new Array();
+var blackImage;
+var whiteImage;
 
 function initDraughtsCanvas(pg){
     playground= pg.split('#'); 
     canvas.addEventListener('mousedown', draughtsClicAppends, false);
-    clearDraughtCanvas(); 
+    blackImage = new Image();	
+	blackImage.onload = function() { 
+		whiteImage = new Image();	
+		whiteImage.onload = function() {
+			clearDraughtCanvas();
+		}
+		whiteImage.src = '/assets/white.png';	 
+	}
+    blackImage.src = '/assets/black.png';	
 }
 
 function clearDraughtCanvas(){
@@ -45,29 +55,16 @@ function highlightDraugthCase(context, caseNumber,color){
 }
 
 function drawAllPiece(context){
-    var whitePieces = new Array();
-    var blackPieces = new Array();
-    for(var i = 0; i<playground.length ;i++){
-        if(playground[i].substring(0,1) == 'b'){            
-            blackPieces[blackPieces.length] = playground[i] + (i + 1);             
-        }
-        else if(playground[i].substring(0,1) == 'w'){
-            whitePieces[whitePieces.length] = playground[i] + (i + 1);    
-        }
-        drawColoredPieces(context, blackPieces,'/assets/black.png');
-        drawColoredPieces(context, whitePieces,'/assets/white.png');
+    for(var i = 0; i<playground.length ;i++){       
+        if(playground[i].substring(0,1) == 'w'){
+			var coords = convertCaseNumberToCoords(i+1);
+			context.drawImage(whiteImage, coords.posX+2, coords.posY+2, 45, 45);
+		}
+		else if(playground[i].substring(0,1) == 'b'){
+			var coords = convertCaseNumberToCoords(i+1);
+			context.drawImage(blackImage, coords.posX+2, coords.posY+2, 45, 45);
+		}
     }    
-}
-
-function drawColoredPieces(context, pieces,imagePath){  
-	var myImage = new Image();	
-    myImage.onload = function() {   
-        for(var i = 0;i<pieces.length;i++){         
-            var coords = convertCaseNumberToCoords(pieces[i].substring(2,pieces[i].length));         
-            context.drawImage(myImage, coords.posX+2, coords.posY+2, 45, 45);
-        }
-    }
-    myImage.src = imagePath;
 }
 
 function reset_selected_case(){
@@ -92,7 +89,7 @@ function draughtsClicAppends(e){
             }
         });
     } 
-    else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) != '_'){
+    else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) == 'w'){
         selected_case = caseNumber;    
         var canvas = $('#canvas')[0];
 	    var context = getContext(canvas);		    

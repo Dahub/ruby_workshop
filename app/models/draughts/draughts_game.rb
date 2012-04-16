@@ -23,9 +23,11 @@ class Draughts_game
             raise "move must be a 3 char table"
         end
         @draughts_playground.add_move(move)
+        ai_move = @draughts_playground.find_new_move()
+        @draughts_playground.add_move(ai_move)
     end
     
     def get_party_state()
-    end   
+    end     
 
 end

@@ -5,10 +5,12 @@ class DraughtsController < ApplicationController
     end
     
     def get_possibles_move()
+        sleep 0.2
         return render :json => session[:party].get_possibles_moves(params['case_number'].to_i)  
     end
     
     def player_move()
+        sleep 0.2
         my_move = params['move'].split(',')
         session[:party].player_move(my_move)
         return render :text => session[:party].get_playground()

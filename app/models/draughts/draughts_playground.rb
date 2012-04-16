@@ -22,19 +22,8 @@ class Draughts_playground
             actual_case = @draughts_table[case_number - 1]
             if(actual_case[0] != '_')
                 line_number = get_line_number(case_number)
-                if(line_number%2 == 0 && actual_case[0] == 'w') 
-                    add_case_number_to_array(to_return, case_number-6, case_number)
-                    add_case_number_to_array(to_return, case_number-5, case_number)
-                elsif(line_number%2 != 0 && actual_case[0] == 'w') 
-                    add_case_number_to_array(to_return, case_number-5, case_number)
-                    add_case_number_to_array(to_return, case_number-4, case_number)
-                elsif(line_number%2 == 0 && actual_case[0] == 'b') 
-                    add_case_number_to_array(to_return, case_number+4, case_number)
-                    add_case_number_to_array(to_return, case_number+5, case_number)
-                elsif(line_number%2 != 0 && actual_case[0] == 'b') 
-                    add_case_number_to_array(to_return, case_number+5, case_number)
-                    add_case_number_to_array(to_return, case_number+6, case_number)
-                end
+                get_cases_for_white(to_return,line_number,case_number,actual_case)
+                get_cases_for_black(to_return,line_number,case_number,actual_case)
             end
         end
         return to_return;
@@ -50,7 +39,32 @@ class Draughts_playground
         end
     end
     
+    def find_new_move()
+        moves = find_all_possibles_moves()
+        return choise_better_move(moves)
+    end
+    
     private
+    
+        def get_cases_for_white(result, line_number,case_number,actual_case)
+             if(line_number%2 == 0 && actual_case[0] == 'w') 
+                add_case_number_to_array(result, case_number-6, case_number)
+                add_case_number_to_array(result, case_number-5, case_number)
+            elsif(line_number%2 != 0 && actual_case[0] == 'w') 
+                add_case_number_to_array(result, case_number-5, case_number)
+                add_case_number_to_array(result, case_number-4, case_number)
+            end        
+        end
+        
+        def get_cases_for_black(result, line_number,case_number,actual_case)
+            if(line_number%2 == 0 && actual_case[0] == 'b') 
+                add_case_number_to_array(result, case_number+4, case_number)
+                add_case_number_to_array(result, case_number+5, case_number)
+            elsif(line_number%2 != 0 && actual_case[0] == 'b') 
+                add_case_number_to_array(result, case_number+5, case_number)
+                add_case_number_to_array(result, case_number+6, case_number)
+            end
+        end        
     
         def get_line_number(case_number)
             return (case_number/5.0).ceil
@@ -67,6 +81,31 @@ class Draughts_playground
                 end
             end
             return my_array
+        end
+        
+        def find_all_possibles_moves()
+            to_return = []
+           
+            index = 0
+            @draughts_table.each do |c|
+                if(c[0] == 'b')
+                    my_moves = []
+                    case_number = index + 1
+                    actual_case = @draughts_table[case_number - 1]
+                    line_number = get_line_number(case_number)
+                    get_cases_for_black(my_moves, line_number,case_number,actual_case)
+                    my_moves.each do |m|
+                        to_return << [case_number.to_s,'-',m.to_s]
+                    end
+                end
+                index += 1
+            end     
+            
+            return to_return
+        end
+        
+        def choise_better_move(moves)
+            return moves.shuffle.first
         end
     
 end

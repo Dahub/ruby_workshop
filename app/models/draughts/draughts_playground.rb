@@ -20,11 +20,9 @@ class Draughts_playground
     def get_possibles_moves(case_number)
         to_return = []                
         if(case_number > 0)
-            actual_case = @draughts_table[case_number - 1]
-            
+            actual_case = @draughts_table[case_number - 1]            
             color = actual_case[0]
-            to_return = check_catch_pieces(color)
-            
+            to_return = check_catch_pieces(color)            
             if(actual_case[0] != '_' && to_return.length == 0)
                 line_number = @draughts_tools.get_line_number(case_number)
                 get_cases_for_white(to_return,line_number,case_number,actual_case)
@@ -61,7 +59,7 @@ class Draughts_playground
         return Draughts_transfert_data.new(@draughts_table,'')        
     end
     
-    def find_new_move()
+    def find_new_move() 
         moves = find_all_possibles_moves()
         return choise_better_move(moves)
     end
@@ -104,8 +102,15 @@ class Draughts_playground
         end    
         
         def find_all_possibles_moves()
+            to_return = check_catch_pieces('b') 
+            if(to_return.length == 0)
+                to_return = find_all_possibles_moves_without_capture()
+            end
+            return to_return
+        end
+        
+        def find_all_possibles_moves_without_capture()
             to_return = []
-           
             index = 0
             @draughts_table.each do |c|
                 if(c[0] == 'b')
@@ -120,7 +125,6 @@ class Draughts_playground
                 end
                 index += 1
             end     
-            
             return to_return
         end
         

@@ -12,7 +12,6 @@ class DraughtsController < ApplicationController
     def player_move()
         sleep 0.2
         my_move = params['move'].split(',')
-        session[:party].player_move(my_move)
-        return render :text => session[:party].get_playground()
+        return render :json => session[:party].player_move(my_move)
     end
 end

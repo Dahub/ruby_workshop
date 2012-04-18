@@ -1,6 +1,6 @@
 var draughts_playzone_width = 500;
 var playground;
-var selected_case = 0;
+var selected_case = new Array();
 var possible_move_cases = new Array();
 var blackImage;
 var whiteImage;
@@ -38,8 +38,10 @@ function drawPossibleMove(context){
 }
 
 function drawSelectedCase(context){
-    if(selected_case > 0){
-        highlightDraugthCase(context, selected_case,"rgba(113, 201, 252, 0.8)");
+    if(selected_case.length > 0){
+        for(var i = 0; i < selected_case.length;i++){
+            highlightDraugthCase(context, selected_case[i],"rgba(113, 201, 252, 0.5)");
+        }
     }
 }
 
@@ -68,7 +70,7 @@ function drawAllPiece(context){
 }
 
 function reset_selected_case(){
-    selected_case = 0;
+    selected_case = [];
     possible_move_cases = [];
 }
 
@@ -76,30 +78,44 @@ function draughtsClicAppends(e){
     var caseNumber = getCaseNumber(e);
     showLoadingDiv();
     if(possible_move_cases && possible_move_cases.indexOf(caseNumber) > -1){ 
+        var capture = '-';
+        var start_case = selected_case[0];
+        for(var i = 0;i < selected_case.length; i ++)
+        {
+            if(Math.abs(selected_case[i] - caseNumber) == 9 || 
+                Math.abs(selected_case[i] - caseNumber) == 11 ){
+                capture = 'x';
+                start_case = selected_case[i]
+            }
+        }
         $.ajax({
             type: 'POST',
             async: true,
             url: "/draughts/player_move",
-            data: "move=" + selected_case + ',-,' + caseNumber,
-            success: function(data) {
-                 playground= data.split('#');                  
-                 reset_selected_case();  
-                 clearDraughtCanvas();   
-                 hideLoadingDiv();          
+            data: "move=" + start_case + ',' + capture + ',' + caseNumber,
+            success: function(data) {                   
+                playground= data.draughts_playground_data;                  
+                reset_selected_case();  
+                clearDraughtCanvas();   
+                hideLoadingDiv();    
             }
         });
     } 
     else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) == 'w'){
-        selected_case = caseNumber;    
+        selected_case[0] = caseNumber;    
         var canvas = $('#canvas')[0];
 	    var context = getContext(canvas);		    
 	    $.ajax({
             type: 'POST',
             async: true,
             url: "/draughts/get_possibles_move",
-            data: "case_number=" + selected_case,
+            data: "case_number=" + selected_case[0],
             success: function(data) {
-                possible_move_cases = data.slice();     
+                possible_move_cases = [];
+                for(var i = 0;i<data.length;i++){
+                    selected_case[i] = data[i][0];
+                    possible_move_cases[possible_move_cases.length] = data[i][2];
+                }
                 clearDraughtCanvas();   
                 hideLoadingDiv();        
             }

@@ -4,6 +4,7 @@ class Draughts_playground
     
     def initialize()
         @draughts_table = []
+        @draughts_tools = Draughts_tools.new()
         case_string = "b0"
         (0..49).each do |pos|
             if(pos == 20)
@@ -15,19 +16,38 @@ class Draughts_playground
             @draughts_table[pos] = case_string
         end
     end
-    
+
     def get_possibles_moves(case_number)
-        to_return = []
+        to_return = []                
         if(case_number > 0)
             actual_case = @draughts_table[case_number - 1]
-            if(actual_case[0] != '_')
-                line_number = get_line_number(case_number)
+            
+            color = actual_case[0]
+            to_return = check_catch_pieces(color)
+            
+            if(actual_case[0] != '_' && to_return.length == 0)
+                line_number = @draughts_tools.get_line_number(case_number)
                 get_cases_for_white(to_return,line_number,case_number,actual_case)
                 get_cases_for_black(to_return,line_number,case_number,actual_case)
             end
         end
         return to_return;
     end 
+    
+    def check_catch_pieces(color)       
+        to_return = []           
+        index = 0
+        @draughts_table.each do |c|
+            if(c[0] == color)
+                case_number = index + 1
+                actual_case = @draughts_table[case_number - 1]
+                line_number = @draughts_tools.get_line_number(case_number)
+                @draughts_tools.check_catch(to_return, line_number,case_number,actual_case, @draughts_table)                
+            end
+            index += 1
+        end             
+        return to_return
+    end
     
     def add_move(move)
         start_case = move[0].to_i
@@ -36,7 +56,9 @@ class Draughts_playground
             player_char = @draughts_table[start_case - 1]
             @draughts_table[start_case - 1] = '_0'
             @draughts_table[end_case - 1] = player_char
+            delete_capture_pieces(move)   
         end
+        return Draughts_transfert_data.new(@draughts_table,'')        
     end
     
     def find_new_move()
@@ -44,44 +66,42 @@ class Draughts_playground
         return choise_better_move(moves)
     end
     
-    private
+    private   
     
-        def get_cases_for_white(result, line_number,case_number,actual_case)
-             if(line_number%2 == 0 && actual_case[0] == 'w') 
-                add_case_number_to_array(result, case_number-6, case_number)
-                add_case_number_to_array(result, case_number-5, case_number)
-            elsif(line_number%2 != 0 && actual_case[0] == 'w') 
-                add_case_number_to_array(result, case_number-5, case_number)
-                add_case_number_to_array(result, case_number-4, case_number)
-            end        
-        end
-        
-        def get_cases_for_black(result, line_number,case_number,actual_case)
-            if(line_number%2 == 0 && actual_case[0] == 'b') 
-                add_case_number_to_array(result, case_number+4, case_number)
-                add_case_number_to_array(result, case_number+5, case_number)
-            elsif(line_number%2 != 0 && actual_case[0] == 'b') 
-                add_case_number_to_array(result, case_number+5, case_number)
-                add_case_number_to_array(result, case_number+6, case_number)
-            end
-        end        
-    
-        def get_line_number(case_number)
-            return (case_number/5.0).ceil
-        end
-        
-        def add_case_number_to_array(my_array, case_number, selected_case)
-            if(@draughts_table[case_number - 1][0] == '_')  
-                if(selected_case.to_s.last == '6' || selected_case.to_s.last == '5')
-                    if((case_number - selected_case).abs == 5)
-                        my_array << case_number
-                    end
-                else                             
-                    my_array << case_number
+        def delete_capture_pieces(move)
+            if(move[1] == 'x')
+                start_case = move[0].to_i
+                end_case = move[2].to_i
+                capture_line_number = (@draughts_tools.get_line_number(start_case) + @draughts_tools.get_line_number(end_case)) / 2
+                case_number = 0
+                if(capture_line_number%2 != 0)
+                    case_number = (start_case + end_case - 1)/2
+                else 
+                    case_number = (start_case + end_case + 1)/2
                 end
+                @draughts_table[case_number - 1] = '_0'
             end
-            return my_array
         end
+    
+        def get_cases_for_white(result, line_number,case_number,actual_case)            
+            if(line_number%2 == 0 && actual_case[0] == 'w') 
+                @draughts_tools.add_case_number_to_array(result, case_number-6, case_number, @draughts_table)
+                @draughts_tools.add_case_number_to_array(result, case_number-5, case_number, @draughts_table)
+            elsif(line_number%2 != 0 && actual_case[0] == 'w') 
+                @draughts_tools.add_case_number_to_array(result, case_number-5, case_number, @draughts_table)
+                @draughts_tools.add_case_number_to_array(result, case_number-4, case_number, @draughts_table)
+            end     
+        end
+        
+        def get_cases_for_black(result, line_number,case_number,actual_case)            
+            if(line_number%2 == 0 && actual_case[0] == 'b') 
+                @draughts_tools.add_case_number_to_array(result, case_number+4, case_number, @draughts_table)
+                @draughts_tools.add_case_number_to_array(result, case_number+5, case_number, @draughts_table)
+            elsif(line_number%2 != 0 && actual_case[0] == 'b') 
+                @draughts_tools.add_case_number_to_array(result, case_number+5, case_number, @draughts_table)
+                @draughts_tools.add_case_number_to_array(result, case_number+6, case_number, @draughts_table)
+            end         
+        end    
         
         def find_all_possibles_moves()
             to_return = []
@@ -92,10 +112,10 @@ class Draughts_playground
                     my_moves = []
                     case_number = index + 1
                     actual_case = @draughts_table[case_number - 1]
-                    line_number = get_line_number(case_number)
+                    line_number = @draughts_tools.get_line_number(case_number)
                     get_cases_for_black(my_moves, line_number,case_number,actual_case)
                     my_moves.each do |m|
-                        to_return << [case_number.to_s,'-',m.to_s]
+                        to_return << m
                     end
                 end
                 index += 1
@@ -105,6 +125,8 @@ class Draughts_playground
         end
         
         def choise_better_move(moves)
+            # intelligence should be define here
+        
             return moves.shuffle.first
         end
     

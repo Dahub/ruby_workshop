@@ -56,6 +56,13 @@ describe Draughts_game do
         @my_game.get_party_state().should eq("none")
     end
     
-   
-    
+    it "should capture piece" do
+        @my_game.draughts_playground.draughts_table = [ 'b0','b0','_0','_0','_0','_0','_0','_0','_0','_0',
+                                                        '_0','_0','_0','_0','_0','_0','_0','_0','_0','_0',
+                                                        '_0','b0','b0','b0','b0','b0','_0','_0','w0','_0',
+                                                        '_0','_0','_0','_0','_0','_0','_0','_0','_0','_0',
+                                                        '_0','_0','_0','_0','_0','_0','_0','_0','w0','w0']
+        @my_game.player_move(['29','x','20'])             
+        @my_game.get_playground().split('#')[23].should eq("_0")
+    end    
 end

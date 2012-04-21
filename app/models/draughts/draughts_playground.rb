@@ -41,10 +41,16 @@ class Draughts_playground
 	
 	def player_move(move)
 		add_move(move)		
-		ai_play()
-		@selected_case = 0
-		@possibles_moves = []
-		define_preselected_cases()
+		if(move[1] != 'x' || get_capture_cases(move[2].to_i, @player_color).length == 0)
+			ai_play()
+			@selected_case = 0
+			@possibles_moves = []
+			define_preselected_cases()
+		else			
+			@selected_case = move[2].to_i
+			@possibles_moves = get_capture_cases(move[2].to_i, @player_color)
+			@preselected_cases = [move[2].to_i]
+		end
 	end
 	
 	private
@@ -52,8 +58,7 @@ class Draughts_playground
 		def ai_play()
 			moves = []
 			ia_color = swicht_color(@player_color)
-			cases = get_cases_number_by_color(ia_color)			
-			
+			cases = get_cases_number_by_color(ia_color)		
 			cases.each do |c|
 				moves_cases = get_capture_cases(c, ia_color)
 				moves_cases.each do |m|
@@ -68,7 +73,16 @@ class Draughts_playground
 					end
 				end	
 			end	
-			add_move(choise_better_move(moves))
+			choised_move =choise_better_move(moves)
+			add_move(choised_move)
+			while(choised_move[1] == 'x' && get_capture_cases(choised_move[2].to_i, ia_color).length > 0)
+				moves_cases = get_capture_cases(choised_move[2].to_i, ia_color)
+				moves_cases.each do |m|
+					moves << build_move(choised_move[2].to_i, m)
+				end
+				choised_move =choise_better_move(moves)
+				add_move(choised_move)
+			end
 		end
 		
 		def choise_better_move(moves)

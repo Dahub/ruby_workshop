@@ -80,7 +80,7 @@ class Draughts_playground
 				moves_cases.each do |m|
 					moves << build_move(choised_move[2].to_i, m)
 				end
-				choised_move =choise_better_move(moves)
+				choised_move = choise_better_move(moves)
 				add_move(choised_move)
 			end
 		end

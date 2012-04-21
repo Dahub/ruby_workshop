@@ -1,20 +1,38 @@
 var playground;
 var whiteImage;
 var blackImage;
+var queenWhiteImage;
+var queenBlackImage;
 var draughts_playzone_width = 500;
 var draughts_case_width = draughts_playzone_width/10;
 
 function initDraughtsCanvas(){
     canvas.addEventListener('mousedown', draughtsClicAppends, false);
-    blackImage = new Image();	
-	blackImage.onload = function() { 
-		whiteImage = new Image();	
-		whiteImage.onload = function() {
-		    loadPlayground();			
-		}
-		whiteImage.src = '/assets/white.png';	 
-	}
-    blackImage.src = '/assets/black.png';	
+    
+    my_images = imagesStack;
+    my_images.onComplete = function(){
+        for(var i = 0;i<my_images.images.length;i++){
+            if(my_images.images[i].src.indexOf("/white.png") > -1){
+                whiteImage = my_images.images[i];
+            }
+            else if(my_images.images[i].src.indexOf("/black.png") > -1){
+                blackImage = my_images.images[i];
+            }
+            else if(my_images.images[i].src.indexOf("/queen_white.png") > -1){
+                queenWhiteImage = my_images.images[i];
+            }
+            else if(my_images.images[i].src.indexOf("/queen_black.png") > -1){
+                queenBlackImage = my_images.images[i]
+            }
+        }
+        loadPlayground();
+    }
+
+    my_images.queue_images(['/assets/white.png',
+                            '/assets/black.png',
+                            '/assets/queen_white.png',
+                            '/assets/queen_black.png']);
+    my_images.process_queue(); 
 }
 
 function loadPlayground(){
@@ -43,14 +61,19 @@ function drawDraughtsCanvas(){
 }
 
 function drawAllPiece(context){             
-    for(var i = 0; i<playground.table.length ;i++){       
-        if(playground.table[i] == 'w'){
-			var coords = convertCaseNumberToCoords(i+1);
+    for(var i = 0; i<playground.table.length ;i++){   
+        var coords = convertCaseNumberToCoords(i+1);    
+        if(playground.table[i] == 'w'){			
 			context.drawImage(whiteImage, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
 		}
 		else if(playground.table[i] == 'b'){
-			var coords = convertCaseNumberToCoords(i+1);
 			context.drawImage(blackImage, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+		}
+		else if(playground.table[i] == 'W'){
+		    context.drawImage(queenWhiteImage, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+		}
+		else if(playground.table[i] == 'B'){
+    		context.drawImage(queenBlackImage, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
 		}
     }    
 }
@@ -108,25 +131,10 @@ function draughtsClicAppends(e){
         playground.possibles_moves = [];
     }
     drawDraughtsCanvas();
-//    showLoadingDiv();
-//    if(possible_move_cases && possible_move_cases.indexOf(caseNumber) > -1){ 
-//        add_draughts_moves(caseNumber)
-//    } 
-//    else if(caseNumber != 0 && playground[caseNumber - 1].substring(0,1) == 'w'){
-//        get_possibles_draughts_moves(caseNumber); 
-//    }
-//    else{        
-//        reset_selected_case();
-//        drawDraughtsCanvas();
-//        hideLoadingDiv();
-//    }       
 }
 
 function buildmove(caseNumber){
-    var middleChar = '-';
-    if(Math.abs(caseNumber - playground.selected_case) > 6){
-        middleChar = 'x';
-    }
+    var middleChar = '?';
     return playground.selected_case + ',' + middleChar + ',' + caseNumber;
 }
 
@@ -189,98 +197,3 @@ function hideLoadingDiv(){
     $("#draughtsLoadingDiv").removeClass("draught_loading");
     $("#draughtsLoadingDiv").addClass("draught_loading_hidden"); 
 }
-
-//function drawPossibleMove(context){
-//    for(var i = 0;i<possible_move_cases.length;i++){    
-//        highlightDraugthCase(context, possible_move_cases[i],"rgba(0, 255, 0, 0.8)");
-//    }
-//}
-
-//function drawSelectedCase(context){
-//    if(selected_case.length > 0){
-//        for(var i = 0; i < selected_case.length;i++){
-//            highlightDraugthCase(context, selected_case[i],"rgba(113, 201, 252, 0.5)");
-//        }
-//    }
-//}
-
-
-
-//function drawAllPiece(context){
-//    for(var i = 0; i<playground.length ;i++){       
-//        if(playground[i].substring(0,1) == 'w'){
-//			var coords = convertCaseNumberToCoords(i+1);
-//			context.drawImage(whiteImage, coords.posX+2, coords.posY+2, 45, 45);
-//		}
-//		else if(playground[i].substring(0,1) == 'b'){
-//			var coords = convertCaseNumberToCoords(i+1);
-//			context.drawImage(blackImage, coords.posX+2, coords.posY+2, 45, 45);
-//		}
-//    }    
-//}
-
-//function reset_selected_case(){
-//    selected_case = [];
-//    possible_move_cases = [];
-//}
-
-
-
-//function add_draughts_moves(caseNumber){
-//    var capture = '-';
-//    var start_case = selected_case[0];
-//    for(var i = 0;i < selected_case.length; i ++)
-//    {
-//        if(Math.abs(selected_case[i] - caseNumber) == 9 || 
-//            Math.abs(selected_case[i] - caseNumber) == 11 ){
-//            capture = 'x';
-//            start_case = selected_case[i]
-//        }
-//    }
-//    $.ajax({
-//        type: 'POST',
-//        async: true,
-//        url: "/draughts/player_move",
-//        data: "move=" + start_case + ',' + capture + ',' + caseNumber,
-//        success: function(data) {     
-//            for(var i = 0; i < data.draughts_playground_data.length; i++)
-//            {
-//                if(data.draughts_playground_data[i] == 'w1'){
-//                    alert('plop');
-//                }
-//            }              
-//            playground= data.draughts_playground_data;                  
-//            reset_selected_case();  
-//            drawDraughtsCanvas();   
-//            hideLoadingDiv();    
-//        }
-//    });
-//}
-
-//function get_possibles_draughts_moves(caseNumber){
-//    selected_case[0] = caseNumber;    
-//    var canvas = $('#canvas')[0];
-//    var context = getContext(canvas);		    
-//    $.ajax({
-//        type: 'POST',
-//        async: true,
-//        url: "/draughts/get_possibles_move",
-//        data: "case_number=" + selected_case[0],
-//        success: function(data) {
-//            possible_move_cases = [];
-//            for(var i = 0;i<data.length;i++){
-//                selected_case[i] = data[i][0];
-//                possible_move_cases[possible_move_cases.length] = data[i][2];
-//            }
-//            drawDraughtsCanvas();   
-//            hideLoadingDiv();        
-//        }
-//    });     
-//}
-
-
-
-
-
-
-

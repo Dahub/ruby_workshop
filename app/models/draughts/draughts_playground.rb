@@ -25,7 +25,7 @@ class Draughts_playground
 		cases_to_add = []
 		get_cases_number_by_color(@player_color).each do |c|
 			cases_to_add = get_capture_cases(c, @player_color)
-			if(cases_to_add.length > 0)
+			if(cases_to_add != nil && cases_to_add.length > 0)
 				preselected_cases << c
 			end
 		end
@@ -35,16 +35,22 @@ class Draughts_playground
 				if(cases_to_add.length > 0)
 					preselected_cases << cases_to_add
 				end
+				cases_to_add = get_cases_for_queen(c, @player_color)				
+				if(cases_to_add.length > 0)
+					preselected_cases << cases_to_add
+				end
 			end
 		end		
 	end
 	
 	def player_move(move)
+		move = define_if_move_is_capture(move)
 		add_move(move)		
 		if(move[1] != 'x' || get_capture_cases(move[2].to_i, @player_color).length == 0)
 			ai_play()
 			@selected_case = 0
 			@possibles_moves = []
+			check_promote_piece(move, @player_color)
 			define_preselected_cases()
 		else			
 			@selected_case = move[2].to_i
@@ -54,41 +60,68 @@ class Draughts_playground
 	end
 	
 	private
+		
+		def define_if_move_is_capture(move)			
+			start_case = move[0].to_i
+			end_case = move[2].to_i
+			capture_color = Draughts_tools.swicht_color(@table[start_case -1])
+			move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE
+			traject_cases = Draughts_direction_helper.get_moves_for_one_direct(move_direction, start_case, end_case)	
+			traject_cases.each do |c|
+				if(@table[c - 1].upcase == capture_color.upcase)
+					move[1] = 'x'
+					break
+				end
+			end
+			return move
+		end	
+		
+		def check_promote_piece(move, color)
+			line_number = Draughts_tools.get_line_number(move[2].to_i)
+			if(color == 'w' && line_number == 1)
+				@table[move[2].to_i - 1 ] = 'W'
+			elsif(color == 'b' && line_number == 10)
+				@table[move[2].to_i - 1 ] = 'B'
+			end
+		end
 	
 		def ai_play()
 			moves = []
-			ia_color = swicht_color(@player_color)
+			ia_color = Draughts_tools.swicht_color(@player_color)
 			cases = get_cases_number_by_color(ia_color)		
 			cases.each do |c|
 				moves_cases = get_capture_cases(c, ia_color)
 				moves_cases.each do |m|
-					moves << build_move(c, m)
+					moves << Draughts_tools.build_move(c, m)
 				end
 			end
 			if(moves.length == 0)
 				cases.each do |c|
 					moves_cases = get_possibles_moves(c)
 					moves_cases.each do |m|
-						moves << build_move(c, m)
+						moves << Draughts_tools.build_move(c, m)
 					end
 				end	
 			end	
 			choised_move =choise_better_move(moves)
+			choised_move = define_if_move_is_capture(choised_move)
 			add_move(choised_move)
 			while(choised_move[1] == 'x' && get_capture_cases(choised_move[2].to_i, ia_color).length > 0)
 				moves_cases = get_capture_cases(choised_move[2].to_i, ia_color)
 				moves_cases.each do |m|
-					moves << build_move(choised_move[2].to_i, m)
+					moves << Draughts_tools.build_move(choised_move[2].to_i, m)
 				end
 				choised_move = choise_better_move(moves)
+				choised_move = define_if_move_is_capture(choised_move)
 				add_move(choised_move)
 			end
+			check_promote_piece(choised_move, ia_color)
 		end
 		
 		def choise_better_move(moves)
-            # intelligence should be define here
+			# intelligence should be define here
         
-            return moves.shuffle.first
+			return moves.shuffle.first
         end
 		
 		# move must be a three char table
@@ -112,33 +145,27 @@ class Draughts_playground
 				end   
 				if(pos == 30)
 					case_string = "w"
-				end
+				end				
 				@table[pos] = case_string
 			end
 		end
 
-		def get_line_number(case_number)
-			return (case_number/5.0).ceil
-		end
-
 		def delete_capture_pieces(move, start_case, end_case)
 			if(move[1] == 'x')
-				capture_line_number = (get_line_number(start_case) + get_line_number(end_case)) / 2
-				case_number = 0
-				if(capture_line_number%2 != 0)
-					case_number = (start_case + end_case - 1)/2
-				else 
-					case_number = (start_case + end_case + 1)/2
+				direction = Draughts_direction_helper.define_move_direction(move)
+				cases = Draughts_direction_helper.get_moves_for_one_direct(direction,start_case,end_case)
+				cases.each do |c|
+					@table[c - 1] = '_'
 				end
-				@table[case_number - 1] = '_'
+
 			end
 		end
 
 		def get_cases_number_by_color(color)
 			cases = []
 			index = 0
-			table.each do |c|
-				if(c == color)
+			@table.each do |c|
+				if(c.upcase == color.upcase)
 					cases << (index +1)
 				end
 				index += 1
@@ -147,7 +174,7 @@ class Draughts_playground
 		end
 		
 		def get_cases(case_number, color)
-			line_number = get_line_number(case_number)
+			line_number = Draughts_tools.get_line_number(case_number)
 			result = []
 			modificator = define_modificator(color)
 			if(line_number%2 == 0) 
@@ -158,15 +185,28 @@ class Draughts_playground
 			return result
 		end 
 		
+		def get_cases_for_queen(case_number, color)
+			result = []
+			if(@table[case_number - 1] == 'W' || @table[case_number - 1] == 'B')
+				Draughts_direction_helper.get_all_traject_for_queen(case_number, @table).each do |c|
+					if(c.length > 0)
+						result << case_number
+						break
+					end
+				end
+			end
+			return result
+		end
+		
 		def define_modificator(color)
 			modificator = -5
-			if(color == 'b')
+			if(color.upcase == 'B')
 				modificator = 5
 			end
 			return modificator
 		end
 		
-		def add_case_number_to_array(my_array, case_number_first,case_number_second, selected_case)
+		def add_case_number_to_array(my_array, case_number_first, case_number_second, selected_case)
 			last_char = selected_case.to_s.last
 			if(@table[case_number_first - 1] == '_' && last_char != '6')
 				my_array << selected_case
@@ -179,21 +219,36 @@ class Draughts_playground
 		def get_possibles_moves(case_number)
 			result= []                
 			if(case_number > 0)
-				actual_case = @table[case_number - 1]            
+				actual_case = @table[case_number - 1]
 				color = actual_case[0]
-				modificator = define_modificator(color)
-#				to_return = check_catch_pieces(color)            
-				if(actual_case[0] != '_' && result.length == 0)
-					line_number = get_line_number(case_number)
-					if(line_number%2 == 0) 
-						select_possibles_moves(result, case_number -1 + modificator,case_number + modificator, case_number)
-					elsif(line_number%2 != 0) 
-						select_possibles_moves(result, case_number + modificator,case_number +1 + modificator, case_number)
-					end					
-				end
+				if(color == 'W' || color == 'B')
+					result = get_possibles_moves_for_queen(case_number,color)
+				else
+					result = get_possibles_moves_for_pieces(case_number,color)
+				end	
 			end
 			return result;
 		end  
+		
+		def get_possibles_moves_for_queen(case_number,color)
+			result = []
+			Draughts_direction_helper.get_all_traject_for_queen(case_number, @table).each do |moves|
+				result.concat(moves)
+			end
+			return result				
+		end
+		
+		def get_possibles_moves_for_pieces(case_number,color)
+			result = []
+			modificator = define_modificator(color)
+			line_number = Draughts_tools.get_line_number(case_number)
+			if(line_number%2 == 0) 
+				select_possibles_moves(result, case_number -1 + modificator,case_number + modificator, case_number)
+			elsif(line_number%2 != 0) 
+				select_possibles_moves(result, case_number + modificator,case_number +1 + modificator, case_number)
+			end					
+			return result
+		end
 		
 		def select_possibles_moves(my_array, case_number_first,case_number_second, selected_case)
 			last_char = selected_case.to_s.last
@@ -204,86 +259,16 @@ class Draughts_playground
 				my_array << case_number_second
 			end
 			return my_array
-		end
+		end		
 		
-		def swicht_color(color)
-			if(color == 'b')
-				return 'w'
-			end
-			return 'b'
-		end
-		
-		def build_move(start_case, end_case)
-			middle_char = '_'
-			if((start_case - end_case).abs > 6)
-				middle_char = 'x'
-			end
-			return [start_case.to_s,middle_char,end_case.to_s]
-		end
-		
-		def get_capture_cases(case_number, color)
-			line_number = get_line_number(case_number)
+		def get_capture_cases(case_number, color)			
 		    moves = []
-		    if(line_number%2 == 0) 
-		        if(case_number > 9 &&
-		            @table[case_number - 1 - 9][0] == '_' && 
-		            @table[case_number - 1 - 5][0] != color &&
-		            @table[case_number - 1 - 5][0] != '_' &&
-		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
-		            moves<< case_number - 9
-		        end
-		        if(case_number > 10 &&
-		            @table[case_number - 1 - 11][0] == '_' && 
-		            @table[case_number - 1 - 6][0] != color &&
-		            @table[case_number - 1 - 6][0] != '_' && 
-		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
-		            moves << case_number - 11
-		        end
-		        if(case_number < 39 &&
-		            @table[case_number - 1 + 11][0] == '_' && 
-		            @table[case_number - 1 + 5][0] != color &&
-		            @table[case_number - 1 + 5][0] != '_' &&
-		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
-		            moves << case_number + 11
-		        end
-		        if( case_number < 42 &&
-		            @table[case_number - 1 + 9][0] == '_' && 
-		            @table[case_number - 1 + 4][0] != color &&
-		            @table[case_number - 1 + 4][0] != '_' &&
-		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
-		            moves << case_number + 9
-		        end
-		    elsif(line_number%2 != 0)
-		        if( case_number > 9 &&
-		            @table[case_number - 1 - 9][0] == '_' && 
-		            @table[case_number - 1 - 4][0] != color &&
-		            @table[case_number - 1 - 4][0] != '_' &&
-		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
-		            moves<< case_number - 9
-		        end
-		        if( case_number > 10 &&
-		            @table[case_number - 1 - 11][0] == '_' && 
-		            @table[case_number - 1 - 5][0] != color &&
-		            @table[case_number - 1 - 5][0] != '_' && 
-		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
-		            moves << case_number - 11
-		        end
-		        if( case_number < 39 &&
-		            @table[case_number - 1 + 11][0] == '_' && 
-		            @table[case_number - 1 + 6][0] != color &&
-		            @table[case_number - 1 + 6][0] != '_' &&
-		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
-		            moves << case_number + 11
-		        end
-		        if( case_number < 42 &&
-		            @table[case_number - 1 + 9][0] == '_' && 
-		            @table[case_number - 1 + 5][0] != color &&
-		            @table[case_number - 1 + 5][0] != '_' &&
-		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
-		            moves << case_number + 9
-		        end
-		    end
-		    
-		    return moves
-		end    
+		    if(@table[case_number - 1] == 'b' || @table[case_number - 1] == 'w')
+			    moves = Draughts_capture_helper.get_capture_cases_for_pieces(case_number, color, @table)
+			elsif(@table[case_number - 1] == 'B' || @table[case_number - 1] == 'W')
+				moves = Draughts_capture_helper.get_capture_cases_for_queen(case_number, color, @table)
+			end
+			return moves
+		end
+		
 end

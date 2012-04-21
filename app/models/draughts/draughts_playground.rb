@@ -10,20 +10,33 @@ class Draughts_playground
 		@player_color = player_color
 	end
 	
-	def define_possibles_moves_cases(case_number)		
-		@possibles_moves = get_possibles_moves(case_number)
+	def define_possibles_moves_cases(case_number)	
+		@possibles_moves = []
+		@possibles_moves = get_capture_cases(case_number, @player_color)	
+		if(@possibles_moves.length == 0)
+			@possibles_moves = get_possibles_moves(case_number)
+		end
 		@selected_case = case_number;
 	end
 	
 	# player_color must be b or w (black or white)
 	def define_preselected_cases()
 		@preselected_cases = []
+		cases_to_add = []
 		get_cases_number_by_color(@player_color).each do |c|
-			cases_to_add = get_cases(c, @player_color)
+			cases_to_add = get_capture_cases(c, @player_color)
 			if(cases_to_add.length > 0)
-				preselected_cases << cases_to_add
+				preselected_cases << c
 			end
 		end
+		if(preselected_cases.length == 0)
+			get_cases_number_by_color(@player_color).each do |c|
+				cases_to_add = get_cases(c, @player_color)
+				if(cases_to_add.length > 0)
+					preselected_cases << cases_to_add
+				end
+			end
+		end		
 	end
 	
 	def player_move(move)
@@ -38,14 +51,23 @@ class Draughts_playground
 	
 		def ai_play()
 			moves = []
-			cases = get_cases_number_by_color(swicht_color(@player_color))	
+			ia_color = swicht_color(@player_color)
+			cases = get_cases_number_by_color(ia_color)			
+			
 			cases.each do |c|
-				moves_cases = get_possibles_moves(c)
+				moves_cases = get_capture_cases(c, ia_color)
 				moves_cases.each do |m|
 					moves << build_move(c, m)
 				end
 			end
-
+			if(moves.length == 0)
+				cases.each do |c|
+					moves_cases = get_possibles_moves(c)
+					moves_cases.each do |m|
+						moves << build_move(c, m)
+					end
+				end	
+			end	
 			add_move(choise_better_move(moves))
 		end
 		
@@ -184,4 +206,70 @@ class Draughts_playground
 			end
 			return [start_case.to_s,middle_char,end_case.to_s]
 		end
+		
+		def get_capture_cases(case_number, color)
+			line_number = get_line_number(case_number)
+		    moves = []
+		    if(line_number%2 == 0) 
+		        if(case_number > 9 &&
+		            @table[case_number - 1 - 9][0] == '_' && 
+		            @table[case_number - 1 - 5][0] != color &&
+		            @table[case_number - 1 - 5][0] != '_' &&
+		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
+		            moves<< case_number - 9
+		        end
+		        if(case_number > 10 &&
+		            @table[case_number - 1 - 11][0] == '_' && 
+		            @table[case_number - 1 - 6][0] != color &&
+		            @table[case_number - 1 - 6][0] != '_' && 
+		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
+		            moves << case_number - 11
+		        end
+		        if(case_number < 39 &&
+		            @table[case_number - 1 + 11][0] == '_' && 
+		            @table[case_number - 1 + 5][0] != color &&
+		            @table[case_number - 1 + 5][0] != '_' &&
+		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
+		            moves << case_number + 11
+		        end
+		        if( case_number < 42 &&
+		            @table[case_number - 1 + 9][0] == '_' && 
+		            @table[case_number - 1 + 4][0] != color &&
+		            @table[case_number - 1 + 4][0] != '_' &&
+		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
+		            moves << case_number + 9
+		        end
+		    elsif(line_number%2 != 0)
+		        if( case_number > 9 &&
+		            @table[case_number - 1 - 9][0] == '_' && 
+		            @table[case_number - 1 - 4][0] != color &&
+		            @table[case_number - 1 - 4][0] != '_' &&
+		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
+		            moves<< case_number - 9
+		        end
+		        if( case_number > 10 &&
+		            @table[case_number - 1 - 11][0] == '_' && 
+		            @table[case_number - 1 - 5][0] != color &&
+		            @table[case_number - 1 - 5][0] != '_' && 
+		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
+		            moves << case_number - 11
+		        end
+		        if( case_number < 39 &&
+		            @table[case_number - 1 + 11][0] == '_' && 
+		            @table[case_number - 1 + 6][0] != color &&
+		            @table[case_number - 1 + 6][0] != '_' &&
+		            case_number.to_s.last != '0' && case_number.to_s.last != '5' )
+		            moves << case_number + 11
+		        end
+		        if( case_number < 42 &&
+		            @table[case_number - 1 + 9][0] == '_' && 
+		            @table[case_number - 1 + 5][0] != color &&
+		            @table[case_number - 1 + 5][0] != '_' &&
+		            case_number.to_s.last != '1' && case_number.to_s.last != '6' )
+		            moves << case_number + 9
+		        end
+		    end
+		    
+		    return moves
+		end    
 end

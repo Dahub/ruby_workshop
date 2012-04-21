@@ -124,7 +124,7 @@ function draughtsClicAppends(e){
 
 function buildmove(caseNumber){
     var middleChar = '-';
-    if(Math.abs(caseNumber - playground.selected_case > 6)){
+    if(Math.abs(caseNumber - playground.selected_case) > 6){
         middleChar = 'x';
     }
     return playground.selected_case + ',' + middleChar + ',' + caseNumber;

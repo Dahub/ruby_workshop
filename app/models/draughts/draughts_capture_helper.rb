@@ -14,7 +14,7 @@ class Draughts_capture_helper
                 elsif(store == true && (table[test_case -1] == nil || table[test_case - 1] != '_'))
                     break                    
                 end
-                if(table[test_case - 1] != '_' && table[test_case - 1].upcase != color.upcase)
+                if(table[test_case - 1] != '_' && table[test_case - 1] != nil && table[test_case - 1].upcase != color.upcase)
                     store = true
                 end
            end

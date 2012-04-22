@@ -69,10 +69,8 @@ class Draughts_capture_helper
 	    return moves
 	end	
 	
-    def self.get_capture_cases_for_queen(case_number, color, table)
-        
+    def self.get_capture_cases_for_queen(case_number, color, table)        
         moves = get_capture_cases_for_queen_check(case_number, color, table, 0)
-         	       
         forced_moves = []
         moves.each do |m|             
             excluded_case = define_excluded_case(case_number, m, table, color)
@@ -99,22 +97,25 @@ class Draughts_capture_helper
             return 0
         end
         
-        def self.get_capture_cases_for_queen_check(case_number, color, table, excluded_case)               
+        def self.get_capture_cases_for_queen_check(case_number, color, table, excluded_case)  
             moves = []
             directions = Draughts_direction_helper.get_all_traject_for_queen_without_stop(case_number)
             directions.each do |d|
                 store = false
-                d.each do |test_case|                
-                    if(store == true && table[test_case - 1] == '_')
+                d.each do |test_case|  
+                    if(store == true && table[test_case - 1] == '_')                        
                         moves << test_case
                     elsif(store == true && (table[test_case -1] == nil || table[test_case - 1] != '_'))
                         break                    
+                    end
+                    if(table[test_case - 1] != nil && table[test_case - 1].upcase == color.upcase)
+                        break
                     end
                     if( table[test_case - 1] != '_' && 
                         table[test_case - 1] != nil &&
                         table[test_case - 1].upcase != color.upcase &&
                         test_case != excluded_case)
-                        store = true
+                        store = true                        
                     end
                end
             end  

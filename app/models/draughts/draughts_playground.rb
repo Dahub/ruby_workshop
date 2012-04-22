@@ -1,6 +1,6 @@
 class Draughts_playground
 
-	attr_accessor :table, :preselected_cases, :selected_case, :possibles_moves
+	attr_accessor :table, :preselected_cases, :selected_case, :possibles_moves, :game_state
 	
 	def initialize(player_color)
 		init_table()
@@ -8,6 +8,7 @@ class Draughts_playground
 		@selected_case = 0
 		@possibles_moves = []
 		@player_color = player_color
+		@game_state = 'none'
 	end
 	
 	def define_possibles_moves_cases(case_number)	
@@ -61,16 +62,18 @@ class Draughts_playground
 	
 	private
 		
-		def define_if_move_is_capture(move)			
-			start_case = move[0].to_i
-			end_case = move[2].to_i
-			capture_color = Draughts_tools.swicht_color(@table[start_case -1])
-			move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE			
-			traject_cases = Draughts_direction_helper.get_moves_for_one_direct(move_direction, start_case, end_case)	
-			traject_cases.each do |c|
-				if(@table[c - 1].upcase == capture_color.upcase)
-					move[1] = 'x'
-					break
+		def define_if_move_is_capture(move)	
+			if(move != nil)		
+				start_case = move[0].to_i
+				end_case = move[2].to_i
+				capture_color = Draughts_tools.swicht_color(@table[start_case -1])
+				move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE			
+				traject_cases = Draughts_direction_helper.get_moves_for_one_direct(move_direction, start_case, end_case)	
+				traject_cases.each do |c|
+					if(@table[c - 1].upcase == capture_color.upcase)
+						move[1] = 'x'
+						break
+					end
 				end
 			end
 			return move
@@ -88,7 +91,7 @@ class Draughts_playground
 		def ai_play()
 			moves = []
 			ia_color = Draughts_tools.swicht_color(@player_color)
-			cases = get_cases_number_by_color(ia_color)		
+			cases = get_cases_number_by_color(ia_color)	
 			cases.each do |c|
 				moves_cases = get_capture_cases(c, ia_color)
 				moves_cases.each do |m|
@@ -103,19 +106,31 @@ class Draughts_playground
 					end
 				end	
 			end	
-			choised_move =choise_better_move(moves)
+			choised_move = choise_better_move(moves)
 			choised_move = define_if_move_is_capture(choised_move)
-			add_move(choised_move)
-			while(choised_move[1] == 'x' && get_capture_cases(choised_move[2].to_i, ia_color).length > 0)
-				moves_cases = get_capture_cases(choised_move[2].to_i, ia_color)
-				moves_cases.each do |m|
-					moves << Draughts_tools.build_move(choised_move[2].to_i, m)
-				end
-				choised_move = choise_better_move(moves)
-				choised_move = define_if_move_is_capture(choised_move)
+			if(choised_move != nil)
 				add_move(choised_move)
+				while(choised_move[1] == 'x' && get_capture_cases(choised_move[2].to_i, ia_color).length > 0)
+					moves = []
+					moves_cases = get_capture_cases(choised_move[2].to_i, ia_color)
+					
+					puts '#################### possible cases : ' + moves_cases.inspect
+					
+					moves_cases.each do |m|
+						moves << Draughts_tools.build_move(choised_move[2].to_i, m)
+					end
+					
+					puts '#################### ' + moves.inspect
+					
+					choised_move = choise_better_move(moves)
+					choised_move = define_if_move_is_capture(choised_move)
+					
+					puts '#################### ' + choised_move.inspect
+					
+					add_move(choised_move)
+				end
+				check_promote_piece(choised_move, ia_color)
 			end
-			check_promote_piece(choised_move, ia_color)
 		end
 		
 		def choise_better_move(moves)
@@ -126,14 +141,16 @@ class Draughts_playground
 		
 		# move must be a three char table
 		def add_move(move)
-			start_case = move[0].to_i
-			end_case = move[2].to_i
-			if(@table[start_case - 1][0] != '_' && @table[end_case - 1][0] == '_')
-				player_char = @table[start_case - 1]
-				@table[start_case - 1] = '_'
-				@table[end_case - 1] = player_char
-				delete_capture_pieces(move, start_case, end_case)  
-			end	
+			if(move != nil)
+				start_case = move[0].to_i
+				end_case = move[2].to_i
+				if(@table[start_case - 1][0] != '_' && @table[end_case - 1][0] == '_')
+					player_char = @table[start_case - 1]
+					@table[start_case - 1] = '_'
+					@table[end_case - 1] = player_char
+					delete_capture_pieces(move, start_case, end_case)  
+				end	
+			end
 		end
 	
 		def init_table()
@@ -170,6 +187,28 @@ class Draughts_playground
 #						'_','_','b','_','_',
 #						'_','_','_','_','_',
 #						'w','_','_','_','_']
+						
+#			@table = [	'_','_','_','_','_',
+#						'_','_','w','_','_',
+#						'b','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','w','_',
+#						'_','_','_','_','_',
+#						'_','b','b','_','_',
+#						'_','b','b','_','_',
+#						'_','_','_','_','_',
+#						'_','B','_','_','_']
+
+#			@table = [	'_','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','_','b',
+#						'_','_','_','_','_',
+#						'_','_','_','_','w',
+#						'_','_','w','w','_',
+#						'_','_','_','_','_',
+#						'_','_','_','_','_']
 		end
 
 		def delete_capture_pieces(move, start_case, end_case)

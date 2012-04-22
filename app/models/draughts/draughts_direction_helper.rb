@@ -54,9 +54,8 @@ class Draughts_direction_helper
 	def self.get_all_traject_for_queen(case_number, table)
 	    trajects = []
 	    index = 0
-
 	    init_directions(case_number).each do |direction|
-	        trajects[index] = get_cases_through_borders(case_number,direction[0],direction[1], table)                    
+	        trajects[index] = get_cases_through_borders(case_number,direction[0],direction[1], table, direction[2])                    
 	        index += 1
 	    end	    
 	    
@@ -65,23 +64,22 @@ class Draughts_direction_helper
 	
 	def self.get_all_traject_for_queen_without_stop(case_number)
 	    trajects = []
-	    index = 0
-
-	    init_directions(case_number).each do |direction|
-	        trajects[index] = get_cases_through_borders(case_number,direction[0],direction[1], nil)                    
+	    index = 0   
+        init_directions(case_number).each do |direction|		                
+	        trajects[index] = get_cases_through_borders(case_number,direction[0],direction[1], nil, direction[2])                    
 	        index += 1
-	    end	    
-	    
+	    end	         
+           
 	    return trajects
 	end
 	
 	private
 
         def self.init_directions(case_number)
-            north_west = [-6,-5]
-	        north_east = [-5,-4]
-	        south_west = [4,5]
-	        south_east = [5,6]
+            north_west = [-6,-5,'NO']
+	        north_east = [-5,-4,'NE']
+	        south_west = [4,5,'SO']
+	        south_east = [5,6,'SE']
 	        
 	        if(Draughts_tools.get_line_number(case_number)%2 != 0)
 	            switch_values_in_tab(north_west)
@@ -98,7 +96,7 @@ class Draughts_direction_helper
             tab[1] = temp
         end	
 	    
-	    def self.get_cases_through_borders(start_case, first_step, second_step, table)
+	    def self.get_cases_through_borders(start_case, first_step, second_step, table, direction)
 	        cases = []
 			switch_step = false
 			continue = true
@@ -112,10 +110,11 @@ class Draughts_direction_helper
 					actual_case += first_step
 					switch_step = true
 				end		
-				
-				if(start_case.to_s.last == '6' && actual_case.to_s.last == '0')				   
+				if(actual_case < 1)
 				    continue = false
-				elsif(start_case.to_s.last == '5' && actual_case.to_s.last == '1')
+				elsif(start_case.to_s.last == '6' && actual_case.to_s.last == '0' && direction.last == 'O')		   
+				    continue = false
+				elsif(start_case.to_s.last == '5' && actual_case.to_s.last == '1' && direction.last == 'E')
 				    continue = false
 				elsif(table != nil && table[actual_case -1] != '_')
 				    continue = false
@@ -129,7 +128,6 @@ class Draughts_direction_helper
 					cases << actual_case			
 				end
 			end while continue == true
-
 			return cases
 	    end
 	     

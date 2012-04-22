@@ -12,7 +12,7 @@ class Draughts_playground
 	
 	def define_possibles_moves_cases(case_number)	
 		@possibles_moves = []
-		@possibles_moves = get_capture_cases(case_number, @player_color)	
+		@possibles_moves = get_capture_cases(case_number, @player_color)		
 		if(@possibles_moves.length == 0)
 			@possibles_moves = get_possibles_moves(case_number)
 		end
@@ -65,7 +65,7 @@ class Draughts_playground
 			start_case = move[0].to_i
 			end_case = move[2].to_i
 			capture_color = Draughts_tools.swicht_color(@table[start_case -1])
-			move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE
+			move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE			
 			traject_cases = Draughts_direction_helper.get_moves_for_one_direct(move_direction, start_case, end_case)	
 			traject_cases.each do |c|
 				if(@table[c - 1].upcase == capture_color.upcase)
@@ -148,6 +148,28 @@ class Draughts_playground
 				end				
 				@table[pos] = case_string
 			end
+			
+#			@table = [	'_','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','b','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','w','_',
+#						'_','_','_','_','_',
+#						'_','b','b','_','_',
+#						'_','_','b','_','_',
+#						'_','_','_','_','_',
+#						'W','_','_','_','_']
+
+#			@table = [	'_','_','_','_','_',
+#						'_','_','w','_','_',
+#						'b','_','_','_','_',
+#						'_','_','_','_','_',
+#						'_','_','_','w','_',
+#						'_','_','_','_','_',
+#						'_','b','b','_','_',
+#						'_','_','b','_','_',
+#						'_','_','_','_','_',
+#						'w','_','_','_','_']
 		end
 
 		def delete_capture_pieces(move, start_case, end_case)
@@ -234,7 +256,7 @@ class Draughts_playground
 			result = []
 			Draughts_direction_helper.get_all_traject_for_queen(case_number, @table).each do |moves|
 				result.concat(moves)
-			end
+			end			
 			return result				
 		end
 		
@@ -266,8 +288,8 @@ class Draughts_playground
 		    if(@table[case_number - 1] == 'b' || @table[case_number - 1] == 'w')
 			    moves = Draughts_capture_helper.get_capture_cases_for_pieces(case_number, color, @table)
 			elsif(@table[case_number - 1] == 'B' || @table[case_number - 1] == 'W')
-				moves = Draughts_capture_helper.get_capture_cases_for_queen(case_number, color, @table)
-			end
+				moves = Draughts_capture_helper.get_capture_cases_for_queen(case_number, color, @table)	
+			end			
 			return moves
 		end
 		

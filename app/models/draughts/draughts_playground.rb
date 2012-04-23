@@ -20,6 +20,7 @@ class Draughts_playground
 		@selected_case = case_number;
 	end
 	
+
 	# player_color must be b or w (black or white)
 	def define_preselected_cases()
 		@preselected_cases = []
@@ -42,25 +43,44 @@ class Draughts_playground
 				end
 			end
 		end		
+		if(@preselected_cases.length == 0)
+		    define_game_state()
+		end
 	end
 	
 	def player_move(move)
 		move = define_if_move_is_capture(move)
 		add_move(move)		
 		if(move[1] != 'x' || get_capture_cases(move[2].to_i, @player_color).length == 0)
-			ai_play()
 			@selected_case = 0
 			@possibles_moves = []
 			check_promote_piece(move, @player_color)
-			define_preselected_cases()
+			ai_play()
 		else			
 			@selected_case = move[2].to_i
 			@possibles_moves = get_capture_cases(move[2].to_i, @player_color)
 			@preselected_cases = [move[2].to_i]
 		end
+		define_preselected_cases()
 	end
 	
 	private
+		
+		def define_game_state()
+		    player_pieces = @table.select { |p| p.upcase == @player_color.upcase }
+		    ai_pieces = @table.select { |p| p.upcase == Draughts_tools.swicht_color(@player_color).upcase }
+		    if(player_pieces.length == 0)		        
+		        @game_state = 'ai'
+		    elsif(ai_pieces.length == 0)
+		        puts '^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+		        @game_state = 'player'
+		    else
+		        @game_state = 'draw'
+		    end
+		    
+		    puts '################################### ' +player_pieces.length.to_s + '/' +ai_pieces.length.to_s + '/' + @game_state
+		    
+		end
 		
 		def define_if_move_is_capture(move)	
 			if(move != nil)		
@@ -114,23 +134,18 @@ class Draughts_playground
 					moves = []
 					moves_cases = get_capture_cases(choised_move[2].to_i, ia_color)
 					
-					puts '#################### possible cases : ' + moves_cases.inspect
-					
 					moves_cases.each do |m|
 						moves << Draughts_tools.build_move(choised_move[2].to_i, m)
 					end
 					
-					puts '#################### ' + moves.inspect
-					
 					choised_move = choise_better_move(moves)
-					choised_move = define_if_move_is_capture(choised_move)
-					
-					puts '#################### ' + choised_move.inspect
-					
+					choised_move = define_if_move_is_capture(choised_move)										
 					add_move(choised_move)
 				end
 				check_promote_piece(choised_move, ia_color)
-			end
+			else
+                define_game_state()
+		    end
 		end
 		
 		def choise_better_move(moves)

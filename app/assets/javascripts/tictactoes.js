@@ -74,7 +74,7 @@ function showEndGame(partyState){
         text = "Player win";
     }
     else if(partyState == "ia"){
-        text = "IA win";
+        text = "AI win";
     }
     $("#partyEnd").html(text);
 }

@@ -40,7 +40,7 @@ function loadPlayground(){
         type: 'POST',
         async: true,
         url: "/draughts/get_playground",
-        success: function(data) {  
+        success: function(data) {            
             playground = eval(data);   
             drawDraughtsCanvas();
         }
@@ -105,7 +105,7 @@ function draughtsClicAppends(e){
         async: true,
         url: "/draughts/get_possibles_move",
         data: "case_number=" + caseNumber,
-        success: function(data) {            
+        success: function(data) {           
                 playground = eval(data);   
                 drawDraughtsCanvas();   
                 hideLoadingDiv();        
@@ -119,10 +119,13 @@ function draughtsClicAppends(e){
         async: true,
         url: "/draughts/player_move",
         data: "move=" + buildmove(caseNumber),
-        success: function(data) {     
+        success: function(data) {  
                 playground = eval(data);   
                 drawDraughtsCanvas();   
-                hideLoadingDiv();        
+                hideLoadingDiv();    
+                if(data.game_state != 'none'){  
+                    showDraughtEndGame(data.game_state);  
+                }    
             }
         });
     }
@@ -196,4 +199,17 @@ function showLoadingDiv(){
 function hideLoadingDiv(){
     $("#draughtsLoadingDiv").removeClass("draught_loading");
     $("#draughtsLoadingDiv").addClass("draught_loading_hidden"); 
+}
+
+function showDraughtEndGame(partyState){
+    $("#partyEnd").removeClass("draught_end_party_hidden");
+    $("#partyEnd").addClass("draught_end_party");     
+    var text = "Draw";
+    if(partyState == "player"){
+        text = "Player win";
+    }
+    else if(partyState == "ai"){
+        text = "AI win";
+    }
+    $("#partyEnd").html(text);
 }

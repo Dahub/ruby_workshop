@@ -7,7 +7,16 @@
     </canvas>
         <%= javascript_tag "initDraughtsCanvas();" %>
     </div>
+    <div id="partyEnd" class="draught_end_party_hidden">
+    </div>
     <div id="draughtsLoadingDiv" class="draught_loading_hidden">
         <%= image_tag ("ajax-loader.gif") %>
+    </div>   
+    <div class="draught_back_menu">
+        <%= form_tag('/draughts/index') do %>           
+            <%= submit_tag(value = "Restart") %>&nbsp;
+            <%= link_to('back to menu','/homes/index') %>
+        <% end %>
     </div>
+    <br /><br />
 </div>

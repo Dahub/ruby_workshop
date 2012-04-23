@@ -80,6 +80,10 @@ a:hover {
     margin-bottom:0px;
     font-size:20px;
 }
+.center{
+    width:100%;
+    text-align:center;
+}
 
 
 .debug_dump

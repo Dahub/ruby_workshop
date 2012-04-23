@@ -28,7 +28,16 @@
     padding-right:10px;
 }
 
-.draught_loading
+.draught_end_party
+{
+    font-size:80px;
+    font-weight:bold;
+    color:#ffffff;
+    padding-top:150px;
+    padding-bottom:40px;
+}
+
+.draught_loading, .draught_end_party
 {
     padding-top:190px;
     text-align:center;
@@ -46,3 +55,18 @@
     display:none;
     background: url('/assets/loading_background.png');
 }
+
+.draught_back_menu
+{
+    position:absolute;
+    width:500px;
+    right:-250px;
+    margin-right:50%;
+    text-align:center;
+    top:700px;
+}
+
+.draught_end_party_hidden
+{
+}
+

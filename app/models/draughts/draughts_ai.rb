@@ -55,7 +55,7 @@ class Draughts_ai
         moves.each do |m|
             # get score for move
             score = nil
-            if(depth != DEPTH)
+            if(depth != DEPTH) # add end of party condition
                 score = get_score_for_move(my_playground, swicht_min_max(min_or_max), m, max_color, depth + 1)
             else # end of tree, calc_score
                 score = get_table_score(my_playground, max_color, swicht_color(max_color))

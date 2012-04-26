@@ -48,25 +48,26 @@ class Draughts_ai
     
     def self.get_score_for_move(playground, min_or_max, move, max_color, depth)
         scores = []
-        my_playground = playground.clone()
-        # simulate move here
-        moves = simulate_move(my_playground, move)
-        # for each move result of this simulation, calc score
-        moves.each do |m|
-            # get score for move
-            score = nil
-            if(depth != DEPTH) # add end of party condition
-                score = get_score_for_move(my_playground, swicht_min_max(min_or_max), m, max_color, depth + 1)
-            else # end of tree, calc_score
-                score = get_table_score(my_playground, max_color, swicht_color(max_color))
+        my_playground = playground.clone()    
+        moves = simulate_move(my_playground, move) # here, add move to playground, and return next moves possible for other player       
+        score = nil
+        
+        if(depth != DEPTH && playground.game_state == 'none')        
+            moves.each do |m|               
+                score = get_score_for_move(my_playground, swicht_min_max(min_or_max), m, max_color, depth + 1)                
             end
             scores << [m,score]
-        # choise min or max score
-        if(min_or_max == MAX_CODE)
-            return scores.max{ |x,y| x[1] <=> y[1] }
-        else
-            return scores.min{ |x,y| x[1] <=> y[1] }
+            # choise min or max score
+            if(min_or_max == MAX_CODE)
+                score = scores.max{ |x,y| x[1] <=> y[1] }
+            else
+                score = scores.min{ |x,y| x[1] <=> y[1] }
+            end
+        else # end of tree, calc score
+            score = get_table_score(my_playground, max_color, swicht_color(max_color))
         end
+        
+        return score
     end
 
     # return a table score

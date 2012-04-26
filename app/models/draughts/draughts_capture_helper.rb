@@ -3,6 +3,16 @@ class Draughts_capture_helper
     def initialize()
     end
         
+    def self.get_capture_cases(case_number, color, table)			
+	    moves = []
+	    if(table[case_number - 1] == 'b' || table[case_number - 1] == 'w')
+		    moves = get_capture_cases_for_pieces(case_number, color, table)
+		elsif(table[case_number - 1] == 'B' || table[case_number - 1] == 'W')
+			moves = get_capture_cases_for_queen(case_number, color, table)	
+		end			
+		return moves
+	end    
+    
     def self.get_capture_cases_for_pieces(case_number, color, table)
 	    moves = []
 	    line_number = Draughts_tools.get_line_number(case_number)

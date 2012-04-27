@@ -11,6 +11,10 @@ class Draughts_playground
 		@game_state = 'none'
 	end
 	
+	def set_new_table(table)
+	    @table = table
+	end
+	
 	def define_possibles_moves_cases(case_number)	
 		@possibles_moves = []
 		@possibles_moves = Draughts_capture_helper.get_capture_cases(case_number, @player_color, table)		
@@ -65,23 +69,6 @@ class Draughts_playground
 	end
 	
 	private
-		
-#		def define_if_move_is_capture(move)	
-#			if(move != nil)		
-#				start_case = move[0].to_i
-#				end_case = move[2].to_i
-#				capture_color = Draughts_tools.swicht_color(@table[start_case -1])
-#				move_direction = Draughts_direction_helper.define_move_direction(move) # shoul be NO NE SO or SE			
-#				traject_cases = Draughts_direction_helper.get_moves_for_one_direct(move_direction, start_case, end_case)	
-#				traject_cases.each do |c|
-#					if(@table[c - 1].upcase == capture_color.upcase)
-#						move[1] = 'x'
-#						break
-#					end
-#				end
-#			end
-#			return move
-#		end	
 		
 		def check_promote_piece(move, color)
 			line_number = Draughts_tools.get_line_number(move[2].to_i)
@@ -150,6 +137,17 @@ class Draughts_playground
 				end				
 				@table[pos] = case_string
 			end
+			
+#			@table = [	'b','_','b','_','_',
+#						'_','_','w','b','_',
+#						'_','b','b','_','_',
+#						'b','w','_','_','b',
+#						'_','_','b','w','_',
+#						'b','_','_','b','_',
+#						'_','b','b','_','w',
+#						'_','_','b','_','b',
+#						'_','w','_','_','_',
+#						'W','_','_','_','_']
 			
 #			@table = [	'_','_','_','_','_',
 #						'_','_','_','_','_',

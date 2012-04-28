@@ -4,101 +4,109 @@ class Draughts_ai
     MIN_VALUE = -1000000
     MAX_CODE = 'max'
     MIN_CODE = 'min'
-    DEPTH = 3
+    DEPTH = 2
     
     def self.find_best_move(playground, color)
-        actual_depth = 0
-        min_or_max = MAX_CODE
         moves = []
-        cases = Draughts_moves_helper.get_cases_number_by_color(color, playground.table) # get all cases
-        cases.each do |start_case|           
-            Draughts_moves_helper.get_possibles_moves(start_case, playground.table).each do |end_case|
+        score = nil
+        possibles_moves = []
+        
+        cases = Draughts_moves_helper.get_cases_number_by_color(color, playground.table) # get all cases for capture
+        cases.each do |start_case|
+            Draughts_capture_helper.get_capture_cases(start_case, color, playground.table).each do |end_case|
                 move = Draughts_tools.build_move(start_case,end_case)
-                move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)           
-                score = get_score_for_move(playground, min_or_max, move, color, 0)
-                moves << [move, score]
-            end           
+                move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)
+                possibles_moves << move
+            end
         end
+        if(possibles_moves.length == 0) # there is none capture to do
+            cases.each do |start_case|
+                Draughts_moves_helper.get_possibles_moves(start_case, playground.table).each do |end_case|
+                    move = Draughts_tools.build_move(start_case,end_case)
+                    move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)
+                    possibles_moves << move
+                end
+            end        
+        end
+        
+        possibles_moves.each do |move|        
+            new_pg = clone_playground(playground)
+            Draughts_moves_helper.add_move(move, new_pg.table) 
+            if(move[1] == 'x' && Draughts_capture_helper.get_capture_cases(move[2].to_i, color, playground.table).length > 0)                      
+                score = get_score_for_move(new_pg, MAX_CODE, color, 0)
+            else
+                score = get_score_for_move(new_pg, MIN_CODE, swicht_color(color), 0) # 0 indicate depth = 0
+            end
+            moves << [move, score]
+        end           
+            
+        puts '###################################### ' + moves.inspect
+            
         max_score = moves.map{ |x| x[1] }.max
         
-        puts max_score.to_s
+        if(moves.length > 0)
+            return ((moves.select {|x| x[1] = max_score}).shuffle)[0][0]
+        end
+        return nil
     end    
     
     private
         
-        def self.get_score_for_move(playground, min_or_max, move, max_color, depth)
+        def self.get_score_for_move(playground, min_or_max, color, depth)
             scores = []
-            my_playground = Draughts_playground.new(swicht_color(max_color))            
-            my_playground.set_new_table(playground.table.clone()) 
-            moves = simulate_move(my_playground, move) # here, add move to playground, and return next moves possible for other player       
+            playgrounds = simulate_moves(playground, color) 
             score = nil
             
-            if(depth != DEPTH && my_playground.game_state == 'none' && moves.length > 0)        
-                moves.each do |m|                                   
-                    score = get_score_for_move(my_playground, swicht_min_max(min_or_max), m, max_color, depth + 1)                               
-                    scores << [m,score]
+            if(depth != DEPTH && playground.game_state == 'none' && playgrounds.length > 0)        
+                playgrounds.each do |pg|                                   
+                    score = get_score_for_move(pg, swicht_min_max(min_or_max), swicht_color(color), depth + 1)                               
+                    scores << score
                 end
                 # choise min or max score
                 if(min_or_max == MAX_CODE)
-                    score = scores.map{ |x| x[1] }.max            
+                    score = scores.max            
                 else
-                    score = scores.map{ |x| x[1] }.min  
+                    score = scores.min  
                 end
 
             else # end of tree, calc score
-                score = get_table_score(my_playground, max_color, swicht_color(max_color))                
+                score = get_table_score(playground, color, swicht_color(color))                
             end    
             
             return score
         end
         
-        def self.simulate_move(playground, move)
-            moves = []
-            color = playground.table[move[0].to_i - 1]            
-           # puts '###############################" ' + move.inspect
-            Draughts_moves_helper.add_move(move, playground.table)                
-          #  moves_cases = []
-          #  moves_cases = Draughts_capture_helper.get_capture_cases(move[2].to_i, color, playground.table)
-   #
-            Draughts_moves_helper.get_cases_number_by_color(color, playground.table).each do |start_case|
-                moves_cases = Draughts_moves_helper.get_possibles_moves(start_case, playground.table)
-                moves_cases.each do |end_case|
-                    move = Draughts_tools.build_move(start_case, end_case)
-                    move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)   
-                    moves << move
+        def self.simulate_moves(playground, color)
+            playgrounds = []            
+            possibles_moves = []
+            
+            cases = Draughts_moves_helper.get_cases_number_by_color(color, playground.table)
+            cases.each do |start_case| 
+                move = ''  
+                new_pg = clone_playground(playground)
+                Draughts_capture_helper.get_capture_cases(start_case, color, playground.table).each do |end_case|
+                    move = Draughts_tools.build_move(start_case,end_case)
+                    move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)                      
+                    Draughts_moves_helper.add_move(move, new_pg.table) 
+                    if(move[1] == 'x' && Draughts_capture_helper.get_capture_cases(move[2].to_i, color, playground.table).length > 0)
+                        simulate_moves(playground, color)                    
+                    end 
                 end
+                if(move == '')
+                    Draughts_moves_helper.get_possibles_moves(start_case, playground.table).each do |end_case|
+                        move = Draughts_tools.build_move(start_case,end_case)
+                        move = Draughts_moves_helper.define_if_move_is_capture(move, playground.table)  
+                        Draughts_moves_helper.add_move(move, new_pg.table) 
+                        if(move[1] == 'x' && Draughts_capture_helper.get_capture_cases(move[2].to_i, color, playground.table).length > 0)
+                            simulate_moves(playground, color)
+                        end
+                    end
+                end
+                playgrounds << new_pg
             end
-       #     end     
-       
-                   
-           # puts '####################### ' + moves_cases.inspect              
-           
-          #  puts '####################### ' + color + '////' + move.inspect + '////' + moves.inspect 
-
-            return moves
+            
+            return playgrounds
         end
-        
-#        def self.build_capture_sequences(playground, move, color, sequences)  
-#            add_move_sequence(playground, move)    
-#            sequences << move
-#            Draughts_capture_helper.get_capture_cases(move[2].to_i, color, playground.table).each do |m|
-#                if(m[1] == 'x')                    
-#                    build_capture_sequence(playground.clone(), m, color, sequences)
-#                else
-#                    sequences << m
-#                    sequences = sequences.clone()
-#                end
-#            end
-#             
-#            return sequences
-#        end
-        
-#        def self.add_move_sequence(playground, playground_moves)
-#            playground_moves.each do |m|
-#                Draughts_moves_helper.add_move(m, playground.table)
-#            end
-#            return playground
-#        end
 
         # return a table score
         # score is > 0 for max_color, < 0 for min_color
@@ -119,6 +127,11 @@ class Draughts_ai
             return score        
         end
         
+        def self.clone_playground(pg)
+            my_playground = Draughts_playground.new(pg.player_color)            
+            my_playground.set_new_table(pg.table.clone()) 
+            return my_playground
+        end
         
         def self.swicht_min_max(value)
             if(value == MAX_CODE)

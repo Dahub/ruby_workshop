@@ -1,6 +1,6 @@
 class Draughts_playground
 
-	attr_accessor :table, :preselected_cases, :selected_case, :possibles_moves, :game_state
+	attr_accessor :table, :preselected_cases, :selected_case, :possibles_moves, :game_state, :player_color 
 	
 	def initialize(player_color)
 		init_table()
@@ -58,8 +58,8 @@ class Draughts_playground
 		if(move[1] != 'x' || Draughts_capture_helper.get_capture_cases(move[2].to_i, @player_color, table).length == 0)
 			@selected_case = 0
 			@possibles_moves = []
-			check_promote_piece(move, @player_color)
-			ai_play()
+			check_promote_piece(move, @player_color)	
+    		ai_play()
 		else			
 			@selected_case = move[2].to_i
 			@possibles_moves = Draughts_capture_helper.get_capture_cases(move[2].to_i, @player_color, table)
@@ -97,7 +97,7 @@ class Draughts_playground
 					end
 				end	
 			end	
-			choised_move = choise_better_move(moves)
+			choised_move = Draughts_ai.find_best_move(self, ia_color)
 			choised_move = Draughts_moves_helper.define_if_move_is_capture(choised_move,table)
 			if(choised_move != nil)
 				Draughts_moves_helper.add_move(choised_move, table)

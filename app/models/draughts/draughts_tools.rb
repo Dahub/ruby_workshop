@@ -20,7 +20,7 @@ class Draughts_tools
     end
     
     def self.define_game_state(table, player_color)
-        game_state = 'draw'
+        game_state = 'none'
 	    player_pieces = table.select { |p| p.upcase == player_color.upcase }
 	    ai_pieces = table.select { |p| p.upcase == swicht_color(player_color).upcase }
 	    if(player_pieces.length == 0)		        

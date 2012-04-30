@@ -1,13 +1,16 @@
 class Draughts_ai
 
-    MAX_VALUE = 1000000
-    MIN_VALUE = -1000000
+    MAX_VALUE = 100000
+    MIN_VALUE = -100000
     MAX_CODE = 'max'
     MIN_CODE = 'min'
     DEPTH = 3
-
+    
+    attr_accessor :player_color
     
     def self.find_best_move(playground, color)
+        @player_color = self.swicht_color(color)
+    
         moves_playgrounds = []
         playgrounds = []
         
@@ -24,7 +27,7 @@ class Draughts_ai
             
         moves_playgrounds.each do |mp|
             mp[1].each do |p|          
-                score = get_score_for_move(p, MIN_CODE, color, 0, color)              
+                score = get_score_for_move(p, MIN_CODE, color, 0, color)         
                 scores << [mp[0], score]   
             end
         end   
@@ -43,6 +46,7 @@ class Draughts_ai
             pg = playground.clone()
             Draughts_moves_helper.add_move(move, pg.table) 
             Draughts_moves_helper.check_promote_piece(move, color, pg.table)
+            pg.game_state = Draughts_tools.define_game_state(pg.table ,@player_color)
             if(check_move_is_capture(move))
                 move_terminated = true      
                 Draughts_capture_helper.get_capture_cases(move[2].to_i, color, pg.table).each do |end_case|
@@ -83,31 +87,31 @@ class Draughts_ai
             return possibles_moves
         end
         
-        def self.get_score_for_move(playground, min_or_max, max_color, depth, color_turn)
-            
-            score = nil
-            playgrounds = []
-            moves = get_legal_moves(playground, self.swicht_color(color_turn)) # get all possibles move for player
-            moves.each do |m|                                    
-                pg = []
-                simulate_move(m, playground, self.swicht_color(color_turn), pg)
-                pg.each do |to_add|
-                    playgrounds << to_add
+        def self.get_score_for_move(playground, min_or_max, max_color, depth, color_turn)      
+            if(depth != DEPTH && playground.game_state == 'none')
+                score = nil
+                playgrounds = []
+                moves = get_legal_moves(playground, self.swicht_color(color_turn)) # get all possibles move for player
+                moves.each do |m|                                    
+                    pg = []
+                    simulate_move(m, playground, self.swicht_color(color_turn), pg)
+                    pg.each do |to_add|
+                        playgrounds << to_add
+                    end
                 end
-            end
-            if(depth != DEPTH && playground.game_state == 'none' && playgrounds.length > 0)
-
-                scores = []
-                playgrounds.each do |p|
-                    scores << self.get_score_for_move(p, self.swicht_min_max(min_or_max), max_color, depth + 1, self.swicht_color(color_turn))
-                end
-                if(min_or_max == MAX_CODE)
-                    score = scores.max
-                else
-                    score = scores.min
-                end                
+                if(playgrounds.length > 0)
+                    scores = []
+                    playgrounds.each do |p|
+                        scores << self.get_score_for_move(p, self.swicht_min_max(min_or_max), max_color, depth + 1, self.swicht_color(color_turn))
+                    end
+                    if(min_or_max == MAX_CODE)
+                        score = scores.max
+                    else
+                        score = scores.min
+                    end          
+                end      
             else            
-                score = get_table_score(playground, max_color, self.swicht_color(max_color))
+                score = get_table_score(playground, max_color, self.swicht_color(max_color), depth)
             end
             
             return score
@@ -115,9 +119,8 @@ class Draughts_ai
         
         # return a table score
         # score is > 0 for max_color, < 0 for min_color
-        def self.get_table_score(playground, max_color, min_color)
-            score = 0
-        
+        def self.get_table_score(playground, max_color, min_color, depth)
+            score = 0       
             if(playground.game_state == 'player')
                 score = MIN_VALUE + depth
             elsif(playground.game_state == 'ai')

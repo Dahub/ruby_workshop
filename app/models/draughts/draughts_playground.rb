@@ -1,6 +1,7 @@
 class Draughts_playground
 
-	attr_accessor :table, :preselected_cases, :selected_case, :possibles_moves, :game_state, :player_color 
+	attr_accessor   :table, :preselected_cases, 
+	                :selected_case, :possibles_moves, :game_state, :player_color 
 	
 	def initialize(player_color)
 		init_table()
@@ -10,9 +11,11 @@ class Draughts_playground
 		@player_color = player_color
 		@game_state = 'none'
 	end
-	
-	def set_new_table(table)
-	    @table = table
+
+	def clone()
+	    my_playground = Draughts_playground.new(@player_color)            
+        my_playground.table = @table.clone()
+        return my_playground
 	end
 	
 	def define_possibles_moves_cases(case_number)	
@@ -58,7 +61,7 @@ class Draughts_playground
 		if(move[1] != 'x' || Draughts_capture_helper.get_capture_cases(move[2].to_i, @player_color, table).length == 0)
 			@selected_case = 0
 			@possibles_moves = []
-			check_promote_piece(move, @player_color)	
+			Draughts_moves_helper.check_promote_piece(move, @player_color, @table)	
     		ai_play()
 		else			
 			@selected_case = move[2].to_i
@@ -69,15 +72,6 @@ class Draughts_playground
 	end
 	
 	private
-		
-		def check_promote_piece(move, color)
-			line_number = Draughts_tools.get_line_number(move[2].to_i)
-			if(color == 'w' && line_number == 1)
-				@table[move[2].to_i - 1 ] = 'W'
-			elsif(color == 'b' && line_number == 10)
-				@table[move[2].to_i - 1 ] = 'B'
-			end
-		end
 	
 		def ai_play()
 			moves = []
@@ -113,7 +107,7 @@ class Draughts_playground
 					choised_move = Draughts_moves_helper.define_if_move_is_capture(choised_move,table)										
 					Draughts_moves_helper.add_move(choised_move, table)
 				end
-				check_promote_piece(choised_move, ia_color)
+				Draughts_moves_helper.check_promote_piece(choised_move, ia_color, @table)
 			else
                 @game_state = Draughts_tools.define_game_state(@table,@player_color)
 		    end
@@ -138,16 +132,16 @@ class Draughts_playground
 				@table[pos] = case_string
 			end
 			
-#			@table = [	'b','_','b','_','_',
-#						'_','_','w','b','_',
+#			@table = [	'b','b','b','b','b',
+#						'b','b','b','b','b',
 #						'_','b','b','_','_',
-#						'b','w','_','_','b',
+#						'b','w','_','b','b',
 #						'_','_','b','w','_',
-#						'b','_','_','b','_',
-#						'_','b','b','_','w',
-#						'_','_','b','_','b',
-#						'_','w','_','_','_',
-#						'W','_','_','_','_']
+#						'b','_','w','b','_',
+#						'w','_','_','_','w',
+#						'_','_','_','_','_',
+#						'w','w','w','w','w',
+#						'w','w','w','w','w']
 			
 #			@table = [	'_','_','_','_','_',
 #						'_','_','_','_','_',
@@ -161,26 +155,26 @@ class Draughts_playground
 #						'W','_','_','_','_']
 
 #			@table = [	'_','_','_','_','_',
+#						'_','_','_','_','_',
+#						'b','_','w','w','_',
+#						'_','_','_','_','_',
 #						'_','_','w','_','_',
-#						'b','_','_','_','_',
+#						'_','w','b','_','_',
+#						'_','b','_','_','_',
 #						'_','_','_','_','_',
-#						'_','_','_','w','_',
 #						'_','_','_','_','_',
-#						'_','b','b','_','_',
-#						'_','_','b','_','_',
-#						'_','_','_','_','_',
-#						'w','_','_','_','_']
+#						'_','_','_','_','_']
 						
 #			@table = [	'_','_','_','_','_',
 #						'_','_','w','_','_',
-#						'b','_','_','_','_',
+#						'b','_','_','w','_',
 #						'_','_','_','_','_',
 #						'_','_','_','w','_',
-#						'_','_','_','_','_',
+#						'_','_','b','_','_',
 #						'_','b','b','_','_',
 #						'_','b','b','_','_',
-#						'_','_','_','_','_',
-#						'_','B','_','_','_']
+#						'_','b','_','_','_',
+#						'_','_','_','_','_']
 
 #			@table = [	'_','_','_','_','_',
 #						'_','_','_','_','_',

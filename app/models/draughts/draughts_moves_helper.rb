@@ -20,9 +20,10 @@ class Draughts_moves_helper
 				player_char = table[start_case - 1]
 				table[start_case - 1] = '_'
 				table[end_case - 1] = player_char
-				delete_capture_pieces(move, start_case, end_case, table)  
+				delete_capture_pieces(move, start_case, end_case, table)  				
 			end	
-		end
+		end		
+		return move
 	end
 	
 	def self.get_possibles_moves(case_number, table)
@@ -38,6 +39,15 @@ class Draughts_moves_helper
 		end
 		return result;
 	end  	
+	
+	def self.check_promote_piece(move, color, table)
+		line_number = Draughts_tools.get_line_number(move[2].to_i)
+		if(color == 'w' && line_number == 1)
+			table[move[2].to_i - 1 ] = 'W'
+		elsif(color == 'b' && line_number == 10)
+			table[move[2].to_i - 1 ] = 'B'
+		end
+	end
 
 	def self.define_if_move_is_capture(move, table)	
 		if(move != nil)		

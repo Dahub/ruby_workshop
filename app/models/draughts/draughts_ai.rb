@@ -89,7 +89,7 @@ class Draughts_ai
         
         def self.get_score_for_move(playground, min_or_max, max_color, depth, color_turn)      
             if(depth != DEPTH && playground.game_state == 'none')
-                score = nil
+                score = 0
                 playgrounds = []
                 moves = get_legal_moves(playground, self.swicht_color(color_turn)) # get all possibles move for player
                 moves.each do |m|                                    

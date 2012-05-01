@@ -3,11 +3,16 @@ var whiteImage;
 var blackImage;
 var queenWhiteImage;
 var queenBlackImage;
+var blackShadow;
+var queenBlackShadow;
+var blackMove;
+var queenBlackMove;
 var draughts_playzone_width = 500;
 var draughts_case_width = draughts_playzone_width/10;
 
 function initDraughtsCanvas(){
     canvas.addEventListener('mousedown', draughtsClicAppends, false);
+    showLoadingDiv();  
     
     my_images = imagesStack;
     my_images.onComplete = function(){
@@ -24,15 +29,33 @@ function initDraughtsCanvas(){
             else if(my_images.images[i].src.indexOf("/queen_black.png") > -1){
                 queenBlackImage = my_images.images[i]
             }
+            else if(my_images.images[i].src.indexOf("/black_shadow.png") > -1){
+                blackShadow = my_images.images[i];
+            }          
+            else if(my_images.images[i].src.indexOf("/queen_black_shadow.png") > -1){
+                queenBlackShadow = my_images.images[i];
+            }
+            else if(my_images.images[i].src.indexOf("/black_move.png") > -1){
+                blackMove = my_images.images[i];
+            }          
+            else if(my_images.images[i].src.indexOf("/queen_black_move.png") > -1){
+                queenBlackMove = my_images.images[i];
+            }
         }
         loadPlayground();
     }
 
     my_images.queue_images(['/assets/white.png',
                             '/assets/black.png',
+                            '/assets/black_shadow.png',
+                            '/assets/queen_black_shadow.png',
+                            '/assets/black_move.png',
+                            '/assets/queen_black_move.png',
                             '/assets/queen_white.png',
                             '/assets/queen_black.png']);
     my_images.process_queue(); 
+    
+    hideLoadingDiv();
 }
 
 function loadPlayground(){
@@ -55,9 +78,33 @@ function drawDraughtsCanvas(){
 	canvas.width = 1;
 	canvas.width = w;
     drawAllPiece(context);	
+    drawMovedPieces(context);
     hightlightPreselectedCases(context);
     hightlightSelectedCase(context);
     hightlightPossiblesMoves(context);
+}
+
+function drawMovedPieces(context){
+    if(playground.moved_cases.length > 0){
+        for(var i = 0; i<playground.moved_cases.length ;i++){          
+            var coords = convertCaseNumberToCoords(playground.moved_cases[i][0]);  
+            if(playground.moved_cases[i][1] == 'b'){
+                context.drawImage(blackShadow, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+            }
+            else if(playground.moved_cases[i][1] == 'B'){
+               context.drawImage(queenBlackShadow, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+            }
+        } 
+    }
+    if(playground.moved_piece_case.length > 0){
+        var coords = convertCaseNumberToCoords(playground.moved_piece_case[0]);  
+        if(playground.moved_piece_case[1] == 'b'){
+            context.drawImage(blackMove, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+        }
+        else if(playground.moved_piece_case[1] == 'B'){
+           context.drawImage(queenBlackMove, coords.posX, coords.posY, draughts_case_width, draughts_case_width);
+        }
+    }
 }
 
 function drawAllPiece(context){             
@@ -105,7 +152,7 @@ function draughtsClicAppends(e){
         async: true,
         url: "/draughts/get_possibles_move",
         data: "case_number=" + caseNumber,
-        success: function(data) {           
+        success: function(data) {         
                 playground = eval(data);   
                 drawDraughtsCanvas();   
                 hideLoadingDiv();        

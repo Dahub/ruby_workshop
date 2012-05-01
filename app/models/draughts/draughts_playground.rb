@@ -1,7 +1,8 @@
 class Draughts_playground
 
 	attr_accessor   :table, :preselected_cases, 
-	                :selected_case, :possibles_moves, :game_state, :player_color 
+	                :selected_case, :possibles_moves, :game_state, :player_color,
+	                :captured_cases, :moved_cases 
 	
 	def initialize(player_color)
 		init_table()
@@ -10,6 +11,9 @@ class Draughts_playground
 		@possibles_moves = []
 		@player_color = player_color
 		@game_state = 'none'
+		@captured_cases = []
+		@moved_cases = []
+		@moved_piece_case = []
 	end
 
 	def clone()
@@ -94,6 +98,9 @@ class Draughts_playground
 			choised_move = Draughts_ai.find_best_move(self, ia_color)
 			choised_move = Draughts_moves_helper.define_if_move_is_capture(choised_move,table)
 			if(choised_move != nil)
+			    @captured_cases = []
+			    piece_type = @table[choised_move[0].to_i - 1]
+			    @moved_cases = [[choised_move[0],piece_type]]
 				Draughts_moves_helper.add_move(choised_move, table)
 				while(choised_move[1] == 'x' && Draughts_capture_helper.get_capture_cases(choised_move[2].to_i, ia_color, table).length > 0)
 					moves = []
@@ -105,9 +112,11 @@ class Draughts_playground
 					
 					choised_move = choise_better_move(moves)
 					choised_move = Draughts_moves_helper.define_if_move_is_capture(choised_move,table)										
+					@moved_cases << [choised_move[0],piece_type]
 					Draughts_moves_helper.add_move(choised_move, table)
 				end
 				Draughts_moves_helper.check_promote_piece(choised_move, ia_color, @table)
+			    @moved_piece_case = [choised_move[2], @table[choised_move[2].to_i - 1]]
 			else
                 @game_state = Draughts_tools.define_game_state(@table,@player_color)
 		    end

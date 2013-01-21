@@ -42,6 +42,7 @@ function initDraughtsCanvas(){
                 queenBlackMove = my_images.images[i];
             }
         }
+        hideLoadingDiv();
         loadPlayground();
     }
 
@@ -54,8 +55,6 @@ function initDraughtsCanvas(){
                             '/assets/queen_white.png',
                             '/assets/queen_black.png']);
     my_images.process_queue(); 
-    
-    hideLoadingDiv();
 }
 
 function loadPlayground(){
